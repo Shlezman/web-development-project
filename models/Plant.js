@@ -1,4 +1,5 @@
 const mongo = require('mongoose');
+const {Schema} = require("mongoose");
 
 const plantSchema = new mongo.Schema({
   name: {
@@ -22,7 +23,7 @@ const plantSchema = new mongo.Schema({
     },
 
   seller: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
     },
@@ -51,7 +52,7 @@ const plantSchema = new mongo.Schema({
 });
 
 // Index
-productSchema.index({ name: 'text', description: 'text'});
+// productSchema.index({ name: 'text', description: 'text'});
 
 // Export
 module.exports = mongo.model('Plant', plantSchema);

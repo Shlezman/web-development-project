@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const plant = require('../web-development-project/models/plant');
-const auth = require('../web-development-project/middleware/auth');
+const plant = require('../models/plant');
+const auth = require('../middleware/auth');
 const asyncHandler = require('../utils/asyncHandler');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, query} = require('express-validator');
 
 // Get all plants
 router.get('/', asyncHandler(async (req, res) => {

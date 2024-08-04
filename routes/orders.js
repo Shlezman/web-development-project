@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../web-development-project/models/order');
-const auth = require('../web-development-project/middleware/auth');
+const Order = require('../models/order');
+const auth = require('../middleware/auth');
+const {check, validationResult} = require("express-validator");
 
 // Create a new order
 router.post('/', [

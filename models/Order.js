@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const mongo = require("mongoose");
+
 
 const orderSchema = new mongo.Schema({
     buyer: {
