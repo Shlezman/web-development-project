@@ -35,10 +35,31 @@ class ProductComponent {
     }
 }
 
-// Display products function
-function displayProducts() {
+function displayProducts(productsToDisplay) {
+    console.log(products)
+    console.log(productsToDisplay)
+    console.log("displayProducts function called");
+    console.log("Products to display:", productsToDisplay);
+
     const productList = document.getElementById("product-list");
-    productList.innerHTML = products.map(product => new ProductComponent(product).render()).join('');
+    if (!productList) {
+        console.error("product-list element not found");
+        return;
+    }
+
+    // If productsToDisplay is an event or not provided, use the global products array
+    if (!(productsToDisplay && Array.isArray(productsToDisplay))) {
+        console.log("Using default products array");
+        productsToDisplay = products;
+    }
+
+    if (productsToDisplay.length === 0) {
+        productList.innerHTML = '<p class="col-12">No products found.</p>';
+    } else {
+        productList.innerHTML = productsToDisplay.map(product => new ProductComponent(product).render()).join('');
+    }
+
+    console.log("Products displayed");
 }
 
 // Call this function when the page loads
@@ -52,10 +73,10 @@ function addToCart(productId) {
 // Search products function
 function searchProducts(query) {
     return products.filter(product =>
-        product.name.toLowerCase().includes(query.toLowerCase())
+        product.name.toLowerCase().includes(query.toLowerCase()) ||
+        product.description.toLowerCase().includes(query.toLowerCase())
     );
 }
-
 // Event listener for search form submission
 document.getElementById('search-form').addEventListener('submit', function (e) {
     e.preventDefault();
