@@ -1,4 +1,6 @@
 const mongo = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
+
 
 const userSchema = new mongo.Schema({
   username: { 
@@ -32,6 +34,7 @@ const userSchema = new mongo.Schema({
   uuid: {
     type: String,
     required: true,
+    default: uuidv4,
     unique: true },
 
   isSeller: {

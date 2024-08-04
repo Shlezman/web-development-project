@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 const { check, validationResult } = require('express-validator');
 
 // User registration and validation!
@@ -30,7 +31,7 @@ router.post('/register', [
             }
 
             // Create new user
-            user = new User({ username, email, password });
+            user = new User({ username, email, password ,uuid: uuidv4() });
 
             // Hash password
             const salt = await bcrypt.genSalt(10);
