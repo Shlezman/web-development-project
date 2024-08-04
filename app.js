@@ -4,6 +4,10 @@ const bodyParser = require('body-parser');
 // npm install express-validator
 const app = express();
 const PORT = process.env.PORT || 3000;
+const dotenv = require('dotenv');
+
+// Load environment variables
+dotenv.config();
 
 // Body Parser
 app.use(bodyParser.json());
