@@ -52,7 +52,6 @@ const plantSchema = new mongo.Schema({
 });
 
 // Index
-// productSchema.index({ name: 'text', description: 'text'});
 
 // Export
 module.exports = mongo.model('Plant', plantSchema);

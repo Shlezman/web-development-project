@@ -20,7 +20,7 @@ mongo.connect('mongodb://0.0.0.0:27017/plants', { useNewUrlParser: true, useUnif
 
 // Routes (need to add!)
 app.use('/api/users', require('./routes/users'));
-app.use('/api/products', require('./routes/plants'));
+app.use('/api/plants', require('./routes/plants'));
 app.use('/api/orders', require('./routes/orders'));
 
 // Start 

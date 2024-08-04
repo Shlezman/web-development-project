@@ -8,7 +8,7 @@ const {check, validationResult} = require("express-validator");
 router.post('/', [
     auth,
     check('plants', 'Plants are required').isArray({ min: 1 }),
-    check('plants.*.product', 'Plant ID is required').not().isEmpty(),
+    check('plants.*.plant', 'Plant ID is required').not().isEmpty(),
     check('plants.*.quantity', 'Quantity must be a positive integer').isInt({ min: 1 }),
     check('totalAmount', 'Total amount must be a positive number').isFloat({ min: 0 })
   ], async (req, res) => {
@@ -41,7 +41,7 @@ router.post('/', [
 // Get user's orders
 router.get('/', auth, async (req, res) => {
   try {
-    const orders = await Order.find({ buyer: req.user.id }).populate("plants.product");
+    const orders = await Order.find({ buyer: req.user.id }).populate("plants.plant");
     res.json(orders);
   } catch (err) {
     console.error(err.message);
