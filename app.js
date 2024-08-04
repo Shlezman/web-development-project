@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 // Connect to mongo
 //TODO: (need change the address to the mongo-server toi an env var for generic deployment)
-mongo.connect('mongodb://localhost/plants', { useNewUrlParser: true, useUnifiedTopology: true })
+mongo.connect('mongodb://0.0.0.0:27017/plants', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB Server: \n', err));
 
