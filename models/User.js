@@ -30,24 +30,12 @@ const userSchema = new mongo.Schema({
     required: true,
     default: 0
     },
-  // add function to generate uuid when creating user
-  uuid: {
-    type: String,
-    required: true,
-    default: uuidv4,
-    unique: true },
 
-  isSeller: {
+
+  isAdmin:{
     type: Boolean,
     require: true,
     default: false
-  },
-
-  // for sellers for making a map with google maps
-  address: {
-    type: String,
-    unique: true,
-    required: false
   }
 
 });
