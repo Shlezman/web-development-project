@@ -2,18 +2,24 @@ const express = require('express');
 const router = express.Router();
 const Plant = require('../models/plant'); // Ensure correct model import
 const auth = require('../middleware/auth');
+const User = require('../models/user');  // Make sure to import the User model
+const adminAuth = require('../middleware/adminAuth');
 const asyncHandler = require('../utils/asyncHandler');
 const { check, validationResult, query } = require('express-validator');
 
-// Get all plants
-router.get('/', asyncHandler(async (req, res) => {
-    try {
-        const plants = await Plant.find().populate('seller', 'username');
-        res.json(plants);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+// Get plants (all for admin, user's plants for regular users)
+router.get('/', auth, asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user.id);
+    let query = {};
+
+    // If not admin, only show user's plants
+    if (!user.isAdmin) {
+        query.seller = user.id;
     }
+    // If admin, query remains empty, showing all plants
+
+    const plants = await Plant.find(query).populate('seller', 'username');
+    res.json(plants);
 }));
 
 // Create a new plant
