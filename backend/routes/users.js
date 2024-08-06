@@ -4,7 +4,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, query } = require('express-validator');
 const auth = require('../middleware/auth');
 const adminAuth = require('../middleware/adminAuth');
 
@@ -169,6 +169,92 @@ router.get('/all', auth, async (req, res) => {
         const users = await User.find().select('-password'); // Exclude password field
 
         res.json(users);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// Search users (admin only)
+router.get('/search', [
+    auth,
+    adminAuth,
+    query('username').optional().isString(),
+    query('email').optional().isEmail(),
+    query('isAdmin').optional().isBoolean(),
+    query('minCredit').optional().isFloat({ min: 0 }),
+    query('maxCredit').optional().isFloat({ min: 0 }),
+    query('sort').optional().isIn(['username_asc', 'username_desc', 'createdAt_asc', 'createdAt_desc', 'credit_asc', 'credit_desc']),
+    query('page').optional().isInt({ min: 1 }),
+    query('limit').optional().isInt({ min: 1, max: 100 })
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { username, email, isAdmin, minCredit, maxCredit, sort, page = 1, limit = 10 } = req.query;
+
+        let query = {};
+
+        if (username) {
+            query.username = { $regex: username, $options: 'i' };
+        }
+
+        if (email) {
+            query.email = { $regex: email, $options: 'i' };
+        }
+
+        if (isAdmin !== undefined) {
+            query.isAdmin = isAdmin === 'true';
+        }
+
+        if (minCredit || maxCredit) {
+            query.credit = {};
+            if (minCredit) query.credit.$gte = parseFloat(minCredit);
+            if (maxCredit) query.credit.$lte = parseFloat(maxCredit);
+        }
+
+        let sortOption = {};
+        if (sort) {
+            switch (sort) {
+                case 'username_asc':
+                    sortOption = { username: 1 };
+                    break;
+                case 'username_desc':
+                    sortOption = { username: -1 };
+                    break;
+                case 'createdAt_asc':
+                    sortOption = { createdAt: 1 };
+                    break;
+                case 'createdAt_desc':
+                    sortOption = { createdAt: -1 };
+                    break;
+                case 'credit_asc':
+                    sortOption = { credit: 1 };
+                    break;
+                case 'credit_desc':
+                    sortOption = { credit: -1 };
+                    break;
+            }
+        }
+
+        const options = {
+            page: parseInt(page, 10),
+            limit: parseInt(limit, 10),
+            sort: sortOption,
+            select: '-password' // Exclude password field
+        };
+
+        const result = await User.paginate(query, options);
+
+        res.json({
+            users: result.docs,
+            currentPage: result.page,
+            totalPages: result.totalPages,
+            totalUsers: result.totalDocs
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');

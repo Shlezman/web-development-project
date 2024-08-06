@@ -3,7 +3,7 @@ const router = express.Router();
 const Order = require('../models/Order');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
-const {check, validationResult} = require("express-validator");
+const {check, validationResult, query } = require("express-validator");
 const asyncHandler = require("../utils/asyncHandler");
 const Plant = require("../models/Plant");
 
@@ -40,26 +40,102 @@ router.post('/', [
     }
   });
 
+// Get orders (all for admin, user's orders for regular users)
+router.get('/', [
+    auth,
+    query('status').optional().isIn(['pending', 'paid', 'shipped', 'delivered']),
+    query('minAmount').optional().isFloat({ min: 0 }),
+    query('maxAmount').optional().isFloat({ min: 0 }),
+    query('buyerUsername').optional().isString(),
+    query('sort').optional().isIn(['createdAt_asc', 'createdAt_desc', 'totalAmount_asc', 'totalAmount_desc']),
+    query('page').optional().isInt({ min: 1 }),
+    query('limit').optional().isInt({ min: 1, max: 100 })
+], asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
 
-// Get user's orders
-router.get('/', auth, async (req, res) => {
-    try {
-        const orders = await Order.find({ buyer: req.user.id })
-            .populate({
+    const user = await User.findById(req.user.id);
+    let query = {};
+
+    // If not admin, only show user's orders
+    if (!user.isAdmin) {
+        query.buyer = user.id;
+    }
+
+    const { status, minAmount, maxAmount, buyerUsername, sort, page = 1, limit = 10 } = req.query;
+
+    if (status) {
+        query.status = status;
+    }
+
+    if (minAmount || maxAmount) {
+        query.totalAmount = {};
+        if (minAmount) query.totalAmount.$gte = parseFloat(minAmount);
+        if (maxAmount) query.totalAmount.$lte = parseFloat(maxAmount);
+    }
+
+    if (buyerUsername) {
+        const buyer = await User.findOne({ username: buyerUsername });
+        if (buyer) {
+            query.buyer = buyer._id;
+        } else {
+            return res.status(404).json({ msg: 'Buyer not found' });
+        }
+    }
+
+    let sortOption = {};
+    if (sort) {
+        switch (sort) {
+            case 'createdAt_asc':
+                sortOption = { createdAt: 1 };
+                break;
+            case 'createdAt_desc':
+                sortOption = { createdAt: -1 };
+                break;
+            case 'totalAmount_asc':
+                sortOption = { totalAmount: 1 };
+                break;
+            case 'totalAmount_desc':
+                sortOption = { totalAmount: -1 };
+                break;
+        }
+    }
+
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        sort: sortOption,
+        populate: [
+            {
+                path: 'buyer',
+                select: 'username'
+            },
+            {
                 path: 'plants.plant',
                 populate: {
                     path: 'seller',
                     model: 'User',
                     select: 'username'
                 }
-            })
-            .populate('buyer', "username");
-        res.json(orders);
+            }
+        ]
+    };
+
+    try {
+        const result = await Order.paginate(query, options);
+        res.json({
+            orders: result.docs,
+            currentPage: result.page,
+            totalPages: result.totalPages,
+            totalOrders: result.totalDocs
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
-});
+}));
 
 // Delete an order (admin only)
 router.delete('/:orderId', auth, async (req, res) => {

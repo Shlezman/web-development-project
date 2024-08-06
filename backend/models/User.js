@@ -1,43 +1,41 @@
-const mongo = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
-
-const userSchema = new mongo.Schema({
-  username: { 
+const userSchema = new mongoose.Schema({
+  username: {
     type: String,
     required: true,
-    unique: true 
-    },
-
+    unique: true
+  },
   email: {
     type: String,
     required: true,
     unique: true
-    },
-
+  },
   password: {
     type: String,
     required: true
-    },
-
+  },
   createdAt: {
     type: Date,
-    default: Date.now 
-    },
-
+    default: Date.now
+  },
   credit: {
     type: Number,
     required: true,
     default: 0
-    },
-
-
-  isAdmin:{
+  },
+  isAdmin: {
     type: Boolean,
-    require: true,
+    required: true,
     default: false
   }
-
 });
 
-module.exports = mongo.model('User', userSchema);
+// Add indexes for improved search performance
+userSchema.index({ username: 1, email: 1, isAdmin: 1, credit: 1 });
+
+// Add the pagination plugin
+userSchema.plugin(mongoosePaginate);
+
+module.exports = mongoose.model('User', userSchema);
