@@ -81,6 +81,42 @@ router.delete('/:plantId', auth, asyncHandler(async (req, res) => {
     res.json({ msg: 'Plant deleted successfully' });
 }));
 
+// Update plant price
+router.patch('/:plantId/price', [
+    auth,
+    check('price', 'Price must be a positive number').isFloat({ min: 0 })
+], asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const plantId = req.params.plantId;
+    const { price } = req.body;
+
+    // Fetch the user from the database
+    const user = await User.findById(req.user.id);
+    if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Find the plant
+    const plant = await Plant.findById(plantId);
+    if (!plant) {
+        return res.status(404).json({ msg: 'Plant not found' });
+    }
+
+    // Check if user is the seller or an admin
+    if (plant.seller.toString() !== user.id && !user.isAdmin) {
+        return res.status(403).json({ msg: 'Not authorized to update this plant' });
+    }
+
+    // Update the plant price
+    plant.price = price;
+    await plant.save();
+
+    res.json({ msg: 'Plant price updated successfully', plant });
+}));
 
 // Search plants
 router.get('/search', [
