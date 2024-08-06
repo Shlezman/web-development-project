@@ -5,9 +5,53 @@ const products = [
     { id: 4, name: "Smartwatch", price: 199.99, image: "https://via.placeholder.com/200x200.png?text=Smartwatch", description: "A feature-packed smartwatch to track your fitness and stay connected." }
 ];
 
+let cart = [];
+
 function getProductDetails(productId) {
     return products.find(product => product.id === productId);
 }
+
+
+function renderHeader(activePage) {
+    const headerContainer = document.getElementById('header');
+    if (headerContainer) {
+        const header = new Header(activePage);
+        headerContainer.innerHTML = header.render();
+    }
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM content loaded");
+
+    const searchForm = document.getElementById('header');
+
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const searchQuery = document.getElementById('search-input').value;
+            console.log("Search query:", searchQuery);
+            const searchResults = searchProducts(searchQuery);
+            console.log("Search results:", searchResults);
+            displayProducts(searchResults);
+        });
+    } else {
+        console.error("search-form element not found");
+    }
+
+    // Initial display of all products
+    console.log("Attempting to display all products");
+    console.log("Products array:", products);
+    displayProducts();
+
+    // Initialize cart count
+    updateCartCount();
+
+    // Render header
+    renderHeader(window.location.pathname.includes('cart.html') ? 'cart' : 'home');
+});
+
 
 
 class ProductComponent {
@@ -36,11 +80,6 @@ class ProductComponent {
 }
 
 function displayProducts(productsToDisplay) {
-    console.log(products)
-    console.log(productsToDisplay)
-    console.log("displayProducts function called");
-    console.log("Products to display:", productsToDisplay);
-
     const productList = document.getElementById("product-list");
     if (!productList) {
         console.error("product-list element not found");
@@ -62,8 +101,6 @@ function displayProducts(productsToDisplay) {
     console.log("Products displayed");
 }
 
-// Call this function when the page loads
-document.addEventListener('DOMContentLoaded', displayProducts);
 
 // Placeholder function for adding to cart (to be implemented later)
 function addToCart(productId) {
@@ -77,11 +114,31 @@ function searchProducts(query) {
         product.description.toLowerCase().includes(query.toLowerCase())
     );
 }
-// Event listener for search form submission
-document.getElementById('search-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const searchQuery = document.getElementById('search-input').value;
-    const searchResults = searchProducts(searchQuery);
-    displayProducts(searchResults);
 
-});
+
+
+// Update cart count
+function updateCartCount() {
+    const cartCount = document.getElementById('cart-count');
+    if (cartCount) {
+        cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+    }
+}
+
+// Add to cart function
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        const existingItem = cart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ ...product, quantity: 1 });
+        }
+        updateCartCount();
+        console.log(`Product ${productId} added to cart`);
+        console.log("Current cart:", cart);
+    }
+}
+
+
