@@ -1,5 +1,7 @@
 const mongo = require('mongoose');
 const {Schema} = require("mongoose");
+const mongoosePaginate = require('mongoose-paginate-v2');
+
 
 const plantSchema = new mongo.Schema({
   name: {
@@ -51,7 +53,9 @@ const plantSchema = new mongo.Schema({
     },
 });
 
-// Index
+plantSchema.plugin(mongoosePaginate);
+plantSchema.index({ name: 'text', description: 'text', category: 'text' });
+
 
 // Export
 module.exports = mongo.model('Plant', plantSchema);
