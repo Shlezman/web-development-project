@@ -54,6 +54,34 @@ router.post('/', [
     }
 });
 
+// Delete a plant
+router.delete('/:plantId', auth, asyncHandler(async (req, res) => {
+    const plantId = req.params.plantId;
+
+    // Fetch the user from the database
+    const user = await User.findById(req.user.id);
+    if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Find the plant
+    const plant = await Plant.findById(plantId);
+    if (!plant) {
+        return res.status(404).json({ msg: 'Plant not found' });
+    }
+
+    // Check if user is the seller or an admin
+    if (plant.seller.toString() !== user.id && !user.isAdmin) {
+        return res.status(403).json({ msg: 'Not authorized to delete this plant' });
+    }
+
+    // Delete the plant
+    await Plant.findByIdAndDelete(plantId);
+
+    res.json({ msg: 'Plant deleted successfully' });
+}));
+
+
 // Search plants
 router.get('/search', [
     query('q').optional().isString(),

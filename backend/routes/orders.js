@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const User = require('../models/User');
 const auth = require('../middleware/auth');
 const {check, validationResult} = require("express-validator");
 
@@ -49,6 +50,37 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// Delete an order (admin only)
+router.delete('/:orderId', auth, async (req, res) => {
+    try {
+        // Fetch the user from the database
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        // Check if user is an admin
+        if (!user.isAdmin) {
+            return res.status(403).json({ msg: 'Not authorized. Admin access required.' });
+        }
+
+        const orderId = req.params.orderId;
+
+        // Find the order
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ msg: 'Order not found' });
+        }
+
+        // Delete the order
+        await Order.findByIdAndDelete(orderId);
+
+        res.json({ msg: 'Order deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
 // Add more routes for updating order status, etc.
 
 module.exports = router;

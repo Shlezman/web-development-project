@@ -114,6 +114,67 @@ router.post('/login', async (req, res) => {
     }
   });
 
+// Delete a user (admin only)
+router.delete('/:userId', auth, async (req, res) => {
+    try {
+        // Fetch the current user (admin) from the database
+        const adminUser = await User.findById(req.user.id);
+        if (!adminUser) {
+            return res.status(404).json({ msg: 'Admin user not found' });
+        }
+
+        // Check if the current user is an admin
+        if (!adminUser.isAdmin) {
+            return res.status(403).json({ msg: 'Not authorized. Admin access required.' });
+        }
+
+        const userIdToDelete = req.params.userId;
+
+        // Prevent admin from deleting themselves
+        if (userIdToDelete === adminUser.id) {
+            return res.status(400).json({ msg: 'Admin cannot delete their own account' });
+        }
+
+        // Find the user to delete
+        const userToDelete = await User.findById(userIdToDelete);
+        if (!userToDelete) {
+            return res.status(404).json({ msg: 'User to delete not found' });
+        }
+
+        // Delete the user
+        await User.findByIdAndDelete(userIdToDelete);
+
+        res.json({ msg: 'User deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// Get all users (admin only)
+router.get('/all', auth, async (req, res) => {
+    try {
+        // Fetch the current user (admin) from the database
+        const adminUser = await User.findById(req.user.id);
+        if (!adminUser) {
+            return res.status(404).json({ msg: 'Admin user not found' });
+        }
+
+        // Check if the current user is an admin
+        if (!adminUser.isAdmin) {
+            return res.status(403).json({ msg: 'Not authorized. Admin access required.' });
+        }
+
+        // Fetch all users
+        const users = await User.find().select('-password'); // Exclude password field
+
+        res.json(users);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 // Add more routes (login, get user profile, etc.)
 
 module.exports = router;
