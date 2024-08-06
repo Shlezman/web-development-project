@@ -1,3 +1,38 @@
+class Cart {
+    constructor() {
+        this.items = [];
+    }
+
+    addItem(item) {
+        this.items.push(item);
+    }
+
+    removeItem(itemId) {
+        this.items = this.items.filter(item => item.id !== itemId);
+    }
+
+    getTotal() {
+        return this.items.reduce((total, item) => total + item.price, 0);
+    }
+
+    // Other methods as needed
+}
+
+// Usage
+const cart = new Cart();
+export default cart;
+function loadCart() {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    }
+}
+
+// Save cart to localStorage
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
 // Display cart items
 function displayCartItems() {
     const cartItemsContainer = document.getElementById('cart-items');
@@ -41,21 +76,20 @@ function removeFromCart(productId) {
     }
 }
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // Render header
     renderHeader('cart');
-
     loadCart();
     displayCartItems();
-    updateCartCount();
+    //updateCartCount();
 
     // Add event listener for search form
-    const searchForm = document.getElementById('search-form');
-    if (searchForm) {
-        searchForm.addEventListener('submit', handleSearch);
-    } else {
-        console.error("search-form element not found");
-    }
+    // const searchForm = document.getElementById('search-form');
+    // if (searchForm) {
+    //     searchForm.addEventListener('submit', handleSearch);
+    // } else {
+    //     console.error("search-form element not found");
+    // }
 });
-
-// ... (keep the rest of the existing code)

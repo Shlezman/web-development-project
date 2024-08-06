@@ -23,9 +23,6 @@ class Header {
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#products">Products</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" href="cart.html">Cart (<span id="cart-count">0</span>)</a>
                     </li>
                 </ul>
@@ -36,3 +33,16 @@ class Header {
         `;
     }
 }
+
+
+function renderHeader(activePage) {
+    const headerContainer = document.getElementById('header');
+    if (headerContainer) {
+        const header = new Header(activePage);
+        headerContainer.innerHTML = header.render();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderHeader()
+});
