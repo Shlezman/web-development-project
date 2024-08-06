@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Plant = require('../models/plant'); // Ensure correct model import
+const Plant = require('../models/Plant'); // Ensure correct model import
 const auth = require('../middleware/auth');
-const User = require('../models/user');  // Make sure to import the User model
+const User = require('../models/User');  // Make sure to import the User model
 const adminAuth = require('../middleware/adminAuth');
 const asyncHandler = require('../utils/asyncHandler');
 const { check, validationResult, query } = require('express-validator');
