@@ -6,6 +6,7 @@ const User = require('../models/User');  // Make sure to import the User model
 const adminAuth = require('../middleware/adminAuth');
 const asyncHandler = require('../utils/asyncHandler');
 const { check, validationResult, query } = require('express-validator');
+const Order = require('../models/Order');
 
 // Get plants (all for admin, user's plants for regular users)
 router.get('/', auth, asyncHandler(async (req, res) => {
@@ -181,16 +182,108 @@ router.get('/search', [
 
     try {
         const result = await Plant.paginate(searchQuery, options);
+        // respond with multiple indexes for identify and search
         res.json({
-            plants: result.docs,
+            plants: result.docs.map(doc => ({
+              ...doc.toJSON(),
+              avgRating: doc.avgRating,
+              numReviews: doc.numReviews
+            })),
             currentPage: result.page,
             totalPages: result.totalPages,
-            totalPlants: result.totalDocs
-        });
+            totalProducts: result.totalDocs
+          });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 }));
 
+// Add a review to a plant
+router.post('/:id/reviews', [
+    auth,
+    check('rating', 'Rating must be a number between 1 and 5').isInt({ min: 1, max: 5 }),
+    check('comment', 'Comment is required').not().isEmpty()
+  ], asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+  
+    const { rating, comment } = req.body;
+    const plant = await Plant.findById(req.params.id);
+  
+    if (!plant) {
+      return res.status(404).json({ msg: 'plant not found' });
+    }
+  
+    // Check if the user has purchased the plant
+    const order = await Order.findOne({
+      buyer: req.user.id,
+      'plants.plant': req.params.id,
+      status: 'delivered'
+    });
+  
+    if (!order) {
+      return res.status(400).json({ msg: 'You must purchase the plant before leaving a review' });
+    }
+  
+    // Check if the user has already reviewed this plant
+    const alreadyReviewed = plant.reviews.find(
+      (review) => review.user.toString() === req.user.id.toString()
+    );
+  
+    if (alreadyReviewed) {
+      return res.status(400).json({ msg: 'plant already reviewed' });
+    }
+  
+    const review = {
+      user: req.user.id,
+      rating: Number(rating),
+      comment
+    };
+  
+    plant.reviews.push(review);
+    plant.numReviews = plant.reviews.length;
+    plant.avgRating = plant.reviews.reduce((acc, item) => item.rating + acc, 0) / plant.reviews.length;
+  
+    await plant.save();
+    res.status(201).json({ msg: 'Review added' });
+  }));
+  
+  // Get reviews for a plant
+router.get('/:id/reviews', asyncHandler(async (req, res) => {
+    const plant = await plant.findById(req.params.id).populate('reviews.user', 'username');
+  
+    if (!plant) {
+      return res.status(404).json({ msg: 'plant not found' });
+    }
+  
+    res.json(plant.reviews);
+  }));
+
+// Get top-rated plants
+router.get('/top-rated', asyncHandler(async (req, res) => {
+    const topPlants = await Plant.find({ numReviews: { $gt: 0 } })
+      .sort({ avgRating: -1 })
+      .limit(5)
+      .populate('seller', 'username');
+  
+    res.json(topPlants);
+  }));
+
+// Get a single plant
+router.get('/:id', asyncHandler(async (req, res) => {
+    const plant = await Plant.findById(req.params.id)
+      .populate('seller', 'username')
+      .populate('reviews.user', 'username');
+  
+    if (!plant) {
+      return res.status(404).json({ msg: 'Plant not found' });
+    }
+  
+    res.json(plant);
+  }));
+
+// export all routes
 module.exports = router;
