@@ -191,7 +191,7 @@ router.get('/search', [
             })),
             currentPage: result.page,
             totalPages: result.totalPages,
-            totalProducts: result.totalDocs
+            totalPlants: result.totalDocs
           });
     } catch (err) {
         console.error(err.message);
