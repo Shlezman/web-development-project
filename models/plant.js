@@ -1,28 +1,5 @@
 const mongo = require('mongoose');
-const {Schema} = require("mongoose");
-const mongoosePaginate = require('mongoose-paginate-v2');
-
-const reviewSchema = new mongo.Schema({
-  user: {
-    type: mongo.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  rating: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 5
-  },
-  comment: {
-    type: String,
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+const mongoPaginate = require('mongoose-paginate-v2');
 
 const plantSchema = new mongo.Schema({
   name: {
@@ -46,7 +23,7 @@ const plantSchema = new mongo.Schema({
     },
 
   seller: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
     },
@@ -72,20 +49,12 @@ const plantSchema = new mongo.Schema({
     type: Date,
     default: Date.now
     },
-  reviews: [reviewSchema],
-  avgRating: {
-      type: Number,
-      default: 0
-    },
-    numReviews: {
-      type: Number,
-      default: 0
-    }
 });
 
-plantSchema.plugin(mongoosePaginate);
-plantSchema.index({ name: 'text', description: 'text', category: 'text' });
-
+// Index
+plantSchema.index({ name: 'text', description: 'text'});
+// Enable pagination
+plantSchema.plugin(mongoPaginate);
 
 // Export
 module.exports = mongo.model('Plant', plantSchema);
