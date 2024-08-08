@@ -68,6 +68,21 @@ All routes marked with [Admin] require the user to have admin privileges.
 - Query params: q (search term), category, minPrice, maxPrice, sort, page, limit
 - Supports pagination and sorting
 
+## reviews
+
+### add review to plant [Auth]
+- POST /api/plants/:plantId/reviews
+- User can add one review per plant
+
+### GET all plant reviews
+- GET /api/plants/:plantId/reviews
+- All plant reviews
+- Public access
+
+### GET top rated plants
+- GET /api/plants/top-rated
+- Public access
+
 ## Orders
 
 ### Create Order [Auth]

@@ -200,7 +200,7 @@ router.get('/search', [
 }));
 
 // Add a review to a plant
-router.post('/:id/reviews', [
+router.post('/:plantId/reviews', [
     auth,
     check('rating', 'Rating must be a number between 1 and 5').isInt({ min: 1, max: 5 }),
     check('comment', 'Comment is required').not().isEmpty()
@@ -211,7 +211,7 @@ router.post('/:id/reviews', [
     }
   
     const { rating, comment } = req.body;
-    const plant = await Plant.findById(req.params.id);
+    const plant = await Plant.findById(req.params.plantId);
   
     if (!plant) {
       return res.status(404).json({ msg: 'plant not found' });
@@ -220,7 +220,7 @@ router.post('/:id/reviews', [
     // Check if the user has purchased the plant
     const order = await Order.findOne({
       buyer: req.user.id,
-      'plants.plant': req.params.id,
+      'plants.plant': req.params.plantId,
       status: 'delivered'
     });
   
@@ -252,8 +252,8 @@ router.post('/:id/reviews', [
   }));
   
   // Get reviews for a plant
-router.get('/:id/reviews', asyncHandler(async (req, res) => {
-    const plant = await plant.findById(req.params.id).populate('reviews.user', 'username');
+router.get('/:plantId/reviews', asyncHandler(async (req, res) => {
+    const plant = await plant.findById(req.params.plantId).populate('reviews.user', 'username');
   
     if (!plant) {
       return res.status(404).json({ msg: 'plant not found' });
@@ -273,8 +273,8 @@ router.get('/top-rated', asyncHandler(async (req, res) => {
   }));
 
 // Get a single plant
-router.get('/:id', asyncHandler(async (req, res) => {
-    const plant = await Plant.findById(req.params.id)
+router.get('/:plantId', asyncHandler(async (req, res) => {
+    const plant = await Plant.findById(req.params.plantId)
       .populate('seller', 'username')
       .populate('reviews.user', 'username');
   
