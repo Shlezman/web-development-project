@@ -1,4 +1,4 @@
-const cart = []
+let cart = []
 const products = [
     { id: 1, name: "Smartphone", price: 499.99, image: "https://via.placeholder.com/200x200.png?text=Smartphone", description: "A high-end smartphone with the latest features." },
     { id: 2, name: "Laptop", price: 799.99, image: "https://via.placeholder.com/200x200.png?text=Laptop", description: "A powerful laptop suitable for both work and gaming." },
@@ -109,6 +109,7 @@ function addToCart(productId) {
             existingItem.quantity++;
         } else {
             cart.push({ ...product, quantity: 1 });
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
         updateCartCount();
         console.log(`Product ${productId} added to cart`);

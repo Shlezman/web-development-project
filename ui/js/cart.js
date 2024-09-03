@@ -1,6 +1,11 @@
 class Cart {
     constructor() {
-        this.items = [];
+        this.items = JSON.parse(localStorage.getItem('cart')) || [];
+    }
+
+    getItems(){
+        return this.items
+
     }
 
     addItem(item) {
@@ -21,10 +26,11 @@ class Cart {
 // Usage
 const cart = new Cart();
 export default cart;
+console.log(cart.items)
 function loadCart() {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-        cart = JSON.parse(savedCart);
+        cart.items = JSON.parse(savedCart);
     }
 }
 
@@ -38,7 +44,7 @@ function displayCartItems() {
     const cartItemsContainer = document.getElementById('cart-items');
     const cartTotalContainer = document.getElementById('cart-total');
 
-    if (cart.length === 0) {
+    if (cart.items.length === 0) {
         cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
         cartTotalContainer.innerHTML = '';
         return;
@@ -46,8 +52,8 @@ function displayCartItems() {
 
     let cartHTML = '<table class="table"><thead><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th><th>Action</th></tr></thead><tbody>';
     let total = 0;
-
-    cart.forEach(item => {
+    console.log(cart.items)
+    cart.getItems().forEach(item => {
         const itemTotal = item.price * item.quantity;
         total += itemTotal;
         cartHTML += `
