@@ -1,4 +1,4 @@
-let cart = []
+let cart = JSON.parse(localStorage.getItem('cart')) || []
 const products = [
     { id: 1, name: "Smartphone", price: 499.99, image: "https://via.placeholder.com/200x200.png?text=Smartphone", description: "A high-end smartphone with the latest features." },
     { id: 2, name: "Laptop", price: 799.99, image: "https://via.placeholder.com/200x200.png?text=Laptop", description: "A powerful laptop suitable for both work and gaming." },
