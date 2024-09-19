@@ -9,11 +9,17 @@ const orderSchema = new mongoose.Schema({
     },
     plants: [{
         plant: { type: mongoose.Schema.Types.ObjectId, ref: 'Plant', required: true },
-        quantity: { type: Number, required: true }
+        quantity: { type: Number, required: true, min: 1 },
+        price: { type: Number, required: true } // Store the price at the time of adding to cart
     }],
     totalAmount: { type: Number, required: true },
-    status: { type: String, enum: ['pending', 'paid', 'shipped', 'delivered'], default: 'pending' },
+    status: {
+        type: String,
+        enum: ['cart', 'pending', 'paid', 'shipped', 'delivered'],
+        default: 'cart'
+    },
     createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
 });
 
 // Add index for buyer and status
