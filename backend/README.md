@@ -87,21 +87,44 @@ All routes marked with [Admin] require the user to have admin privileges.
 
 ### Create Order [Auth]
 - POST /api/orders
-- Body: { plants: [{ plant, quantity }], totalAmount }
-- Validates: plants (array, min 1), plant ID, quantity (positive integer), totalAmount (positive number)
+- Body:
+  {
+  "plants": [{ "plant": "plantId", "quantity": 1 }]
+  }
+- Validates:
+    - `plants`: Array of at least one object
+    - `plant`: Must be a valid MongoDB ID
+    - `quantity`: Positive integer
+- Description:
+  This route creates a new order. The total amount is calculated based on the price of the plants.
 
 ### Get Orders [Auth]
 - GET /api/orders
-- For regular users: Returns only their own orders
-- For admins: Returns all orders
-- Query params: status, minAmount, maxAmount, buyerUsername, sort, page, limit
-- Supports filtering, pagination, and sorting
+- Query Params:
+    - `status` (optional): 'cart', 'pending', 'paid', 'shipped', 'delivered'
+    - `minAmount` (optional): Minimum order total amount
+    - `maxAmount` (optional): Maximum order total amount
+    - `buyerUsername` (optional, Admin only): Filter by the buyer's username
+    - `sort` (optional): 'createdAt_asc', 'createdAt_desc', 'totalAmount_asc', 'totalAmount_desc'
+    - `page` (optional): Page number (default 1)
+    - `limit` (optional): Number of results per page (default 10, max 100)
+- Description:
+  For regular users, this returns only their own orders. Admins receive all orders. The results are paginated and can be filtered and sorted based on the query parameters provided.
 
 ### Delete Order [Auth] [Admin]
 - DELETE /api/orders/:orderId
-- Admin only
+- Description:
+  This route allows admins to delete an order by its ID.
 
-### Update Order Total Amount [Auth] [Admin]
-- PATCH /api/orders/:orderId/totalAmount
-- Admin only
-- Body: { totalAmount }
+### Update Order [Auth]
+- PATCH /api/orders/:orderId
+- Body:
+  {
+  "plants": [{ "plant": "plantId", "quantity": 1 }]
+  }
+- Validates:
+    - `plants`: Array of plant objects
+    - `plant`: Must be a valid MongoDB ID
+    - `quantity`: Positive integer
+- Description:
+  This route updates the plants in an order. It only allows modifications to orders with the status "cart". The total amount is recalculated based on the updated plants and quantities.

@@ -11,39 +11,50 @@ const Plant = require("../models/Plant");
 router.post('/', [
     auth,
     check('plants', 'Plants are required').isArray({ min: 1 }),
-    check('plants.*.plant', 'Plant ID is required').not().isEmpty(),
-    check('plants.*.quantity', 'Quantity must be a positive integer').isInt({ min: 1 }),
-    check('totalAmount', 'Total amount must be a positive number').isFloat({ min: 0 })
-  ], async (req, res) => {
+    check('plants.*.plant', 'Plant ID is required').isMongoId(),
+    check('plants.*.quantity', 'Quantity must be a positive integer').isInt({ min: 1 })
+], asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ errors: errors.array() });
     }
-  
+
+    const { plants } = req.body;
+
     try {
-        try {
-            const { plants, totalAmount } = req.body;
-            const newOrder = new Order({
-              buyer: req.user.id,
-                plants,
-              totalAmount
-            });
-            const order = await newOrder.save();
-            res.status(201).json(order);
-          } catch (err) {
-            console.error(err.message);
-            res.status(500).send('Server error');
-          }
+        // Fetch all plant details and calculate total amount
+        const plantsWithDetails = await Promise.all(plants.map(async (item) => {
+            const plant = await Plant.findById(item.plant);
+            if (!plant) {
+                throw new Error(`Plant with id ${item.plant} not found`);
+            }
+            return {
+                plant: plant._id,
+                quantity: item.quantity,
+                price: plant.price
+            };
+        }));
+
+        const totalAmount = plantsWithDetails.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        const newOrder = new Order({
+            buyer: req.user.id,
+            plants: plantsWithDetails,
+            totalAmount
+        });
+
+        const order = await newOrder.save();
+        res.status(201).json(order);
     } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ msg: 'Server error', error: err.message });
+        console.error(err.message);
+        res.status(500).json({ msg: 'Server error', error: err.message });
     }
-  });
+}));
 
 // Get orders (all for admin, user's orders for regular users)
 router.get('/', [
     auth,
-    query('status').optional().isIn(['pending', 'paid', 'shipped', 'delivered']),
+    query('status').optional().isIn(['cart', 'pending', 'paid', 'shipped', 'delivered']),
     query('minAmount').optional().isFloat({ min: 0 }),
     query('maxAmount').optional().isFloat({ min: 0 }),
     query('buyerUsername').optional().isString(),
@@ -171,10 +182,12 @@ router.delete('/:orderId', auth, async (req, res) => {
 
 
 
-// Update order totalAmount
-router.patch('/:orderId/totalAmount', [
+// Update order
+router.patch('/:orderId', [
     auth,
-    check('totalAmount', 'totalAmount must be a positive number').isFloat({ min: 0 })
+    check('plants', 'Plants must be an array').isArray(),
+    check('plants.*.plant', 'Plant ID is required').isMongoId(),
+    check('plants.*.quantity', 'Quantity must be a positive integer').isInt({ min: 1 }),
 ], asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -182,30 +195,48 @@ router.patch('/:orderId/totalAmount', [
     }
 
     const orderId = req.params.orderId;
-    const { totalAmount } = req.body;
+    const { plants } = req.body;
 
-    // Fetch the user from the database
+    // Fetch the user and order
     const user = await User.findById(req.user.id);
-    if (!user) {
-        return res.status(404).json({ msg: 'User not found' });
-    }
-
-    // Find the order
     const order = await Order.findById(orderId);
+
     if (!order) {
         return res.status(404).json({ msg: 'Order not found' });
     }
 
-    // Check if user is the seller or an admin
-    if (!user.isAdmin) {
+    // Check if user is the order creator or an admin
+    if (!user.isAdmin && order.buyer.toString() !== user.id) {
         return res.status(403).json({ msg: 'Not authorized to update this order' });
     }
 
-    // Update the order totalAmount
-    order.totalAmount = totalAmount;
+    // Only allow modifications if the order status is 'cart'
+    if (order.status !== 'cart') {
+        return res.status(400).json({ msg: 'Can only modify orders with status "cart"' });
+    }
+
+    // Validate and update each plant in the order
+    const updatedPlants = await Promise.all(plants.map(async (plantItem) => {
+        const plant = await Plant.findById(plantItem.plant);
+        if (!plant) {
+            throw new Error(`Plant with id ${plantItem.plant} not found`);
+        }
+        return {
+            plant: plant._id,
+            quantity: plantItem.quantity,
+            price: plant.price // Use current price
+        };
+    }));
+
+    order.plants = updatedPlants;
+
+    // Calculate total amount
+    order.totalAmount = updatedPlants.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+    // Update the order
     await order.save();
 
-    res.json({ msg: 'Order total amount updated successfully', order: order });
+    res.json({ msg: 'Order updated successfully', order: order });
 }));
 // Add more routes for updating order status, etc.
 
