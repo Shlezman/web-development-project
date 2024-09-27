@@ -105,8 +105,14 @@ router.post('/login', async (req, res) => {
   
       jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
         if (err) throw err;
+        res.cookie('username', user.username, { 
+            httpOnly: false, 
+            secure: true,
+            path: '/', 
+            sameSite: 'None'});
         res.json({ token });
       });
+
   
     } catch (err) {
       console.error(err.message);
