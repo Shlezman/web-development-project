@@ -1,4 +1,5 @@
-.login-form {
+/* Center the register form and give it a clean layout */
+.register-form {
     max-width: 400px; /* Set the width for readability */
     margin: 50px auto; /* Center the form on the page */
     padding: 20px;
@@ -7,18 +8,23 @@
     background-color: #fff; /* White background */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
 }
+
+/* Style form groups with appropriate spacing */
 .form-group {
     margin-bottom: 20px;
 }
 footer p {
     text-align: center; /* This will center the text content within the footer element */
   }
+/* Improve label styling */
 .form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold; /* Bold labels for clarity */
     color: #333;
 }
+
+/* Input fields styling */
 .form-group input {
     width: 100%;
     padding: 10px;
@@ -28,7 +34,15 @@ footer p {
     box-sizing: border-box;
     transition: border-color 0.3s;
 }
-.btn-login {
+
+/* Focus effect on input fields */
+.form-group input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Register button styling */
+.btn-register {
     display: block;
     width: 100%;
     background-color: #007bff;
@@ -40,17 +54,19 @@ footer p {
     cursor: pointer;
     transition: background-color 0.3s;
 }
-.btn-login:hover {
+
+/* Button hover effect */
+.btn-register:hover {
     background-color: #0056b3;
 }
 
 /* Responsive design for mobile screens */
 @media (max-width: 576px) {
-    .login-form {
+    .register-form {
         padding: 15px;
     }
 
-    .btn-login {
+    .btn-register {
         padding: 10px 0;
     }
 }

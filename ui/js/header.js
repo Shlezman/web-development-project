@@ -1,28 +1,17 @@
 class Header {
     constructor(activeLink = '') {
         this.activeLink = activeLink;
-        this.user = this.getUser();
+        this.user = getCookie('username');
     }
 
-    getUser() {
-        const token = localStorage.userToken;
-        if (token) {
-            try {
-                return token;
-            } catch (e) {
-                console.error('Error parsing user token:', e);
-                return null;
-            }
-        }
-        return null;
-    }
 
     renderAuthButton() {
-        if (this.user) {
+        console.log(this.user);
+        if (this.user !== undefined) {
             return `
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        ${this.user.name}
+                        ${this.user}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#" onclick="logout()">Sign-Out</a></li>
@@ -33,6 +22,9 @@ class Header {
             return `
                 <li class="nav-item">
                     <a class="nav-link" href="login.html">Login</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="register.html">Register</a>
                 </li>
             `;
         }
@@ -69,6 +61,13 @@ class Header {
     }
 }
 
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+
 function renderHeader(activePage) {
     const headerContainer = document.getElementById('header');
     if (headerContainer) {
@@ -78,7 +77,7 @@ function renderHeader(activePage) {
 }
 
 function logout() {
-    localStorage.removeItem('userToken');
+    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     window.location.reload();
 }
 

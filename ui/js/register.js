@@ -5,21 +5,22 @@ function getCookie(name) {
   }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('login-form');
-    const messageElement = document.getElementById('login-message');
+    const loginForm = document.getElementById('register-form');
+    const messageElement = document.getElementById('register-message');
 
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        const username = document.getElementById('username').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
-        fetch('http://localhost:3000/api/users/login', {
+        fetch('http://localhost:3000/api/users/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ username, email, password }),
             credentials: 'include'
         })
         .then(response => {
@@ -31,15 +32,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            console.log('Login successful');
-            const username = getCookie('username');
-            console.log('Logged in user:', username);
-            window.location.href = 'index.html';
+            console.log('Registration successful');
+            window.location.href = 'login.html';
             
         })
         .catch(error => {
             console.error('Error:', error);
-            messageElement.textContent = 'Error: ' + (error.msg || 'An unknown error occurred');
+            messageElement.textContent = 'Error: ' + (error.msg || error.errors[0].msg|| 'An unknown error occurred');
             messageElement.style.color = 'red';
         });
     });
