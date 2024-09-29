@@ -4,7 +4,6 @@ class Header {
         this.user = getCookie('username');
     }
 
-
     renderAuthButton() {
         console.log(this.user);
         if (this.user !== undefined) {
@@ -39,11 +38,6 @@ class Header {
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <form class="d-flex" id="search-form">
-                    <input class="form-control me-2" type="search" placeholder="Search products" aria-label="Search"
-                        id="search-input">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
@@ -65,8 +59,7 @@ function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-
+}
 
 function renderHeader(activePage) {
     const headerContainer = document.getElementById('header');
@@ -83,4 +76,26 @@ function logout() {
 
 document.addEventListener('DOMContentLoaded', () => {
     renderHeader();
+
+    // Add event listener for search input
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    
+    function performSearch() {
+        const searchTerm = searchInput.value;
+        // Dispatch a custom event with the search term
+        document.dispatchEvent(new CustomEvent('performSearch', { detail: searchTerm }));
+    }
+
+    searchButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        performSearch();
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            performSearch();
+        }
+    });
 });
