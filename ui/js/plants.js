@@ -1,3 +1,4 @@
+//const { prefix } = require('./config');
 const searchForm = document.getElementById('search-form');
 const plantsContainer = document.getElementById('plants-container');
 const prevPageBtn = document.getElementById('prev-page');
@@ -40,7 +41,7 @@ function fetchPlants() {
     }
 
 
-    fetch(`http://localhost:3000/api/plants/search?${queryParams}`)
+    fetch(`https://bug-free-engine-x9j4gp9pw5v3r6g-3000.app.github.dev/api/plants/search?${queryParams}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');

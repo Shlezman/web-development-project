@@ -1,3 +1,4 @@
+//const { prefix } = require('./config');
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
-        fetch('http://localhost:3000/api/users/register', {
+        fetch(`https://bug-free-engine-x9j4gp9pw5v3r6g-3000.app.github.dev/api/users/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

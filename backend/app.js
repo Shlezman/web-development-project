@@ -17,11 +17,11 @@ app.use(bodyParser.json());
 
 // Added: CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:5500', // Replace with your frontend URL
+  origin: 'https://bug-free-engine-x9j4gp9pw5v3r6g-5502.app.github.dev', // Replace with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  optionSuccessStatus:200,
   credentials: true 
-
 };
 
 // Added: Apply CORS middleware
