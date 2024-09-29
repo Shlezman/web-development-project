@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const corsOptions = {
   origin: 'http://localhost:5500', // Replace with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
   credentials: true 
 
 };
