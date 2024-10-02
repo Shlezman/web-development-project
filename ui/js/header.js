@@ -83,26 +83,4 @@ function logout() {
 
 document.addEventListener('DOMContentLoaded', () => {
     renderHeader();
-<<<<<<< Updated upstream
-
-    
-    function performSearch() {
-        const searchTerm = searchInput.value;
-        // Dispatch a custom event with the search term
-        document.dispatchEvent(new CustomEvent('performSearch', { detail: searchTerm }));
-    }
-
-    searchButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        performSearch();
-    });
-
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            performSearch();
-        }
-    });
-=======
->>>>>>> Stashed changes
 });
