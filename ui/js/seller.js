@@ -32,6 +32,38 @@ function renderProductTable() {
     });
 }
 
+function fetchPlants() {
+    const formData = new FormData(searchForm);
+
+    const queryParams = new URLSearchParams(formData);
+    
+    const minPriceInput = document.getElementById('minPrice');
+    if (!minPriceInput.value) {
+        queryParams.delete('minPrice')
+    }
+
+    const maxPriceInput = document.getElementById('maxPrice');
+    if (!maxPriceInput.value) {
+        queryParams.delete('maxPrice')
+    }
+
+
+    fetch(`https://bug-free-engine-x9j4gp9pw5v3r6g-3000.app.github.dev/api/plants/search?${queryParams}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            displayPlants(data);
+        })
+        .catch(error => {
+            console.error('Error fetching plants:', error);
+            plantsContainer.innerHTML = '<p>Error fetching plants. Please try again.</p>';
+        });
+}
+
 function openAddProductModal() {
     document.getElementById('addProductModal').style.display = 'block';
 }

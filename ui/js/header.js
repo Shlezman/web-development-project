@@ -30,6 +30,9 @@ class Header {
                 <li class="nav-item">
                 <a class="nav-link" href="register.html">Register</a>
                 </li>
+                <li class="nav-item">
+                <a class="nav-link" href="seller.html">Seller</a>
+                </li>
             `;
         }
     }
