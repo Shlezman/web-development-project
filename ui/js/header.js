@@ -83,6 +83,7 @@ function logout() {
 
 document.addEventListener('DOMContentLoaded', () => {
     renderHeader();
+<<<<<<< Updated upstream
 
     
     function performSearch() {
@@ -102,4 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
             performSearch();
         }
     });
+=======
+>>>>>>> Stashed changes
 });

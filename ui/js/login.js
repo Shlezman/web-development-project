@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Login successful');
             const username = getCookie('username');
             console.log('Logged in user:', username);
-            window.location.href = 'index.html';
+            //window.location.href = 'index.html';
             
         })
         .catch(error => {
