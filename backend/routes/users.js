@@ -109,7 +109,20 @@ router.post('/login', async (req, res) => {
             httpOnly: false, 
             secure: true,
             path: '/', 
-            sameSite: 'None'});
+            sameSite: 'None',
+            maxAge: 3600000 });
+        res.cookie('isAdmin', user.isAdmin, { 
+            httpOnly: false, 
+            secure: true,
+            path: '/', 
+            sameSite: 'None',
+            maxAge: 3600000 });
+        res.cookie('jwt', token, {
+            httpOnly: false, 
+            secure: true,
+            path: '/', 
+            sameSite: 'None',
+            maxAge: 3600000 });
         res.json({ token });
       });
 
