@@ -1,3 +1,9 @@
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
 const searchForm = document.getElementById('search-form');
 const plantsContainer = document.getElementById('plants-container');
 const prevPageBtn = document.getElementById('prev-page');
@@ -22,6 +28,54 @@ prevPageBtn.addEventListener('click', () => {
 nextPageBtn.addEventListener('click', () => {
     currentPage++;
     fetchPlants();
+});
+
+document.getElementById('create-plant-btn').addEventListener('click', function() {
+    document.getElementById('create-plant-modal').style.display = 'block';
+});
+
+document.getElementById('close-create-plant').addEventListener('click', function() {
+    document.getElementById('create-plant-modal').style.display = 'none';
+});
+
+document.getElementById('create-plant-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    
+    const plantData = {
+        name: document.getElementById('plant-name').value,
+        description: document.getElementById('plant-description').value,
+        price: parseFloat(document.getElementById('plant-price').value), 
+        category: document.getElementById('plant-category').value,
+        originCountry: document.getElementById('plant-origin-country').value,
+        indoor: document.getElementById('indoor').checked
+    };
+
+    const token = getCookie('jwt'); 
+
+    fetch(`${API_BASE_URL}/plants`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token
+        },
+        body: JSON.stringify(plantData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to create plant');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert('Plant created successfully');
+        document.getElementById('create-plant-modal').style.display = 'none';
+        document.getElementById('create-plant-form').reset();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to create plant');
+    });
 });
 
 function fetchPlants() {

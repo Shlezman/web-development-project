@@ -37,7 +37,7 @@ footer p {
 
 /* Focus effect on input fields */
 .form-group input:focus {
-    border-color: #007bff;
+    border-color: #28a745;
     outline: none;
 }
 
@@ -45,7 +45,7 @@ footer p {
 .btn-register {
     display: block;
     width: 100%;
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
     padding: 12px 0;
     font-size: 16px;
@@ -57,7 +57,7 @@ footer p {
 
 /* Button hover effect */
 .btn-register:hover {
-    background-color: #0056b3;
+    background-color: #28a745;
 }
 
 /* Responsive design for mobile screens */
@@ -68,5 +68,6 @@ footer p {
 
     .btn-register {
         padding: 10px 0;
+        background-color: #28a745;
     }
 }
