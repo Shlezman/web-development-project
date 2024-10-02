@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        
-        fetch('http://localhost:3000/api/users/login', {
+        const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+
+
+        fetch(`${API_BASE_URL}/users/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

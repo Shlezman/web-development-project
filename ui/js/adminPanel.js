@@ -5,8 +5,8 @@ function getCookie(name) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    renderHeader('admin');  // Assuming 'admin' is the active page for styling
-
+    renderHeader('admin'); 
+    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
     const adminContent = document.getElementById('admin-content');
     const unauthorizedMessage = document.getElementById('unauthorized-message');
     const messageElement = document.getElementById('message');
@@ -16,9 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const getAllUsersButton = document.getElementById('get-all-users');
     const usersListElement = document.getElementById('users-list');
 
-    // Check if user is logged in and is an admin
     const isAdmin = getCookie('isAdmin') === 'true';
-    const token = getCookie('jwt');  // Changed from 'token' to 'jwt'
+    const token = getCookie('jwt');  
 
     if (!isAdmin || !token) {
         adminContent.style.display = 'none';
@@ -39,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     makeAdminForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const userId = document.getElementById('make-admin-userId').value;
-        fetch(`http://localhost:3000/api/users/make-admin/${userId}`, {
+        fetch(`${API_BASE_URL}/users/make-admin/${userId}`, {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
@@ -48,14 +47,16 @@ document.addEventListener('DOMContentLoaded', function() {
             credentials: 'include'
         })
         .then(handleResponse)
-        .then(data => showMessage('User made admin successfully'))
+        .then(data => {
+            showMessage('User made admin successfully');
+            makeAdminForm.reset();})
         .catch(handleError);
     });
 
     deleteUserForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const userId = document.getElementById('delete-userId').value;
-        fetch(`http://localhost:3000/api/users/${userId}`, {
+        fetch(`${API_BASE_URL}/users/${userId}`, {
             method: 'DELETE',
             headers: { 
                 'Content-Type': 'application/json',
@@ -64,7 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
             credentials: 'include'
         })
         .then(handleResponse)
-        .then(data => showMessage('User deleted successfully'))
+        .then(data => {
+            showMessage('User deleted successfully');
+            deleteUserForm.reset();})
         .catch(handleError);
     });
 
@@ -79,11 +82,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const page = document.getElementById('search-page').value;
         const limit = document.getElementById('search-limit').value;
 
-        const queryParams = new URLSearchParams({
-            username, email, isAdmin, minCredit, maxCredit, sort, page, limit
-        });
+        // const queryParams = new URLSearchParams({
+        //     username, email, isAdmin, minCredit, maxCredit, sort, page, limit
+        // });
 
-        fetch(`http://localhost:3000/api/users/search?${queryParams}`, {
+        const queryParams = new URLSearchParams();
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                queryParams.append(key, value);
+            }
+        });
+        
+        fetch(`${API_BASE_URL}/users/search?${queryParams}`, {
             method: 'GET',
             headers: { 
                 'Content-Type': 'application/json',
@@ -95,12 +105,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             displayUsers(data.users);
             showMessage('Users fetched successfully');
+            searchUsersForm.reset();
         })
         .catch(handleError);
     });
 
     getAllUsersButton.addEventListener('click', function() {
-        fetch('http://localhost:3000/api/users/all', {
+        fetch(`${API_BASE_URL}/users/all`, {
             method: 'GET',
             headers: { 
                 'Content-Type': 'application/json',

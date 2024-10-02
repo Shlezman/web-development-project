@@ -17,11 +17,10 @@ app.use(bodyParser.json());
 
 // Added: CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:5500', // Replace with your frontend URL
+  origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
-  credentials: true 
-
+  credentials: true
 };
 
 // Added: Apply CORS middleware
