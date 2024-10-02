@@ -27,6 +27,7 @@ nextPageBtn.addEventListener('click', () => {
 
 function fetchPlants() {
     const formData = new FormData(searchForm);
+    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 
     const queryParams = new URLSearchParams(formData);
     
@@ -41,7 +42,7 @@ function fetchPlants() {
     }
 
 
-    fetch(`https://bug-free-engine-x9j4gp9pw5v3r6g-3000.app.github.dev/api/plants/search?${queryParams}`)
+    fetch(`${API_BASE_URL}/plants/search?${queryParams}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');

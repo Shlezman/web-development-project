@@ -8,6 +8,7 @@ function getCookie(name) {
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('register-form');
     const messageElement = document.getElementById('register-message');
+    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
-        fetch(`https://bug-free-engine-x9j4gp9pw5v3r6g-3000.app.github.dev/api/users/register`, {
+        fetch(`${API_BASE_URL}/users/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
