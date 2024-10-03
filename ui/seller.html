@@ -12,7 +12,9 @@
 </head>
 <body>
     <h1>Seller Admin Page</h1>
-    
+    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <a href="/ui/index.html" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Home</a>
+    </div>
     <h2>Product Management</h2>
 
     <table id="productTable">
@@ -50,7 +52,7 @@
     <div id="addProductModal" class="modal">
         <h3>Add/Edit Product</h3>
         <input type="text" id="productName" placeholder="Product Name">
-        <input type="number" id="productPrice" placeholder="Price">
+        <input type="number" id="productPrice" step="0.01" placeholder="Price">
         <input type="number" id="productStock" placeholder="Stock">
         <button onclick="saveProduct()">Save</button>
         <button onclick="closeAddProductModal()">Cancel</button>

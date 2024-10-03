@@ -21,6 +21,9 @@ class Header {
                         <li><a class="dropdown-item" href="#" onclick="logout()">Sign-Out</a></li>
                     </ul>
                 </div>
+                <li class="nav-item">
+                <a class="nav-link" href="seller.html">Seller</a>
+                </li>
             `;
         } else {
             return `
@@ -29,9 +32,6 @@ class Header {
                 </li>
                 <li class="nav-item">
                 <a class="nav-link" href="register.html">Register</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="seller.html">Seller</a>
                 </li>
             `;
         }

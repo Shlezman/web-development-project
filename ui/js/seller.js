@@ -30,7 +30,7 @@ function renderProductTable(products) {
         const row = tbody.insertRow();
         row.innerHTML = `
             <td>${product.name}</td>
-            <td> <input type="number" value="${product.price.toFixed(2)}" id="price-${product._id}" onchange="updatePrice('${product._id}', this)" /> </td>
+            <td><input type="number" value="${product.price.toFixed(2)}" id="price-${product._id}" onchange="updatePrice('${product._id}', this)" /></td>
             <td>${product.stock}</td>
             <td>
                 <button onclick="editProduct('${product._id}')">Edit</button>
@@ -48,31 +48,39 @@ function handleResponse(response) {
     return response.json();
 }
 
-async function updatePrice(productId, newPrice) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/plants/${productId}/price`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token
-        },
-        body: JSON.stringify({ price: +newPrice }),
-        credentials: 'include'
-      });
-  
-    //   if (!response.ok) {
-    //     console.log(error)
-    //     throw new Error('Failed to update price');
-    //   }
-  
-      const updatedProduct = await response.json();
-      console.log('Price updated successfully:', updatedProduct);
-      // You might want to update your local state or trigger a re-fetch of data here
-    } catch (error) {
-      console.error('Error updating price:', error);
-      // Handle the error (e.g., show an error message to the user)
+async function updatePrice(productId, inputElement) {
+    const newPrice = parseFloat(inputElement.value);
+    if (isNaN(newPrice)) {
+        console.error('Invalid price');
+        return;
     }
-  }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/plants/${productId}/price`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            body: JSON.stringify({ price: newPrice }),
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update price');
+        }
+
+        const updatedProduct = await response.json();
+        console.log('Price updated successfully:', updatedProduct);
+        // Update the input field with the new price
+        inputElement.value = updatedProduct.price.toFixed(2);
+    } catch (error) {
+        console.error('Error updating price:', error);
+        // Revert the input field to the original price
+        inputElement.value = product.price.toFixed(2);
+        alert('Failed to update price. Please try again.');
+    }
+}
 
 async function fetchPlants() {
     // const formData = new FormData(searchForm);
