@@ -15,16 +15,23 @@ dotenv.config();
 // Body Parser
 app.use(bodyParser.json());
 
-// Added: CORS configuration
+// CORS configuration to allow all origins
 const corsOptions = {
-  origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
+  origin: function (origin, callback) {
+    if (origin) {
+      // Allow the specific origin if it's present (for credentials)
+      callback(null, origin);
+    } else {
+      // Allow requests with no origin (e.g., mobile apps, servers)
+      callback(null, '*');
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
-  credentials: true
+  credentials: true // Allow credentials (cookies, etc.)
 };
 
-
-// Added: Apply CORS middleware
+// Apply CORS middleware
 app.use(cors(corsOptions));
 
 // Connect to mongo
