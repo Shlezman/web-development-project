@@ -115,8 +115,9 @@
     <script>
         // Script to toggle the create plant modal
         const createPlantBtn = document.getElementById('create-plant-btn');
-        const createPlantModal = new bootstrap.Modal(document.getElementById('create-plant-modal'));
-
+        //const createPlantModal = new bootstrap.Modal(document.getElementById('create-plant-modal'));
+        const createPlantModal = new bootstrap.Modal(document.getElementById('create-plant-modal'), {
+                                                    backdrop: false});
         createPlantBtn.addEventListener('click', () => {
             createPlantModal.show();
         });
