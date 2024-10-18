@@ -51,10 +51,14 @@
                                 <label for="plant-origin-country" class="form-label">Origin Country</label>
                                 <input type="text" class="form-control" id="plant-origin-country" name="originCountry" placeholder="Origin Country" required>
                             </div>
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="indoor" name="indoor">
-                                <label class="form-check-label" for="indoor">Indoor Plant</label>
-                            </div>
+                            <div class="mb-3">
+                                <label for="plantType" class="form-label">Plant Type</label>
+                                <select class="form-select" id="plantType" name="plantType" required>
+                                    <option value="" disabled selected>Select plant type</option>
+                                    <option value="indoor">Indoor Plant</option>
+                                    <option value="outdoor">Outdoor Plant</option>
+                                </select>
+                            </div>                            
                             <button type="submit" class="btn btn-success w-100">Submit</button>
                         </form>
                     </div>
