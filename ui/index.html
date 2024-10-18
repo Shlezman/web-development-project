@@ -4,30 +4,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Store</title>
+    <title>Plants Store</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/plants.css">
 </head>
 
 <body>
-    <header id="header"></header>
+    <header id="header" class="bg-light p-3 shadow-sm">
+        <h1 class="text-center">Plant Store</h1>
+    </header>
 
-    <main class="container mt-4">
-        <section id="products" class="mt-5">
-            <h2 class="mb-4">Our Products</h2>
-            <div id="product-list" class="row">
-                <!-- Product items will be dynamically added here -->
+    <div role="main" class="container mt-4">
+        <!-- Create Plant Button -->
+        <div class="d-flex justify-content-end mb-3">
+            <button id="create-plant-btn" class="btn btn-success">Create Plant</button>
+        </div>
+
+        <!-- Create Plant Modal -->
+        <div id="create-plant-modal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create a New Plant</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="create-plant-form">
+                            <div class="mb-3">
+                                <label for="plant-name" class="form-label">Plant Name</label>
+                                <input type="text" class="form-control" id="plant-name" name="name" placeholder="Plant Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="plant-description" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="plant-description" name="description" placeholder="Description" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="plant-price" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="plant-price" name="price" placeholder="Price" step="0.01" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="plant-category" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="plant-category" name="category" placeholder="Category" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="plant-origin-country" class="form-label">Origin Country</label>
+                                <input type="text" class="form-control" id="plant-origin-country" name="originCountry" placeholder="Origin Country" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="plantType" class="form-label">Plant Type</label>
+                                <select class="form-select" id="plantType" name="plantType" required>
+                                    <option value="" disabled selected>Select plant type</option>
+                                    <option value="indoor">Indoor Plant</option>
+                                    <option value="outdoor">Outdoor Plant</option>
+                                </select>
+                            </div>                            
+                            <button type="submit" class="btn btn-success w-100">Submit</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </section>
-    </main>
+        </div>
+
+        <!-- Search Section -->
+        <div id="search-section" class="section mb-4">
+            <h2 class="mb-3">Search Plants</h2>
+            <form id="search-form" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="q" name="q" placeholder="Search term">
+                </div>
+                <div class="col-md-3">
+                    <select id="category" name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        <option value="Flower">Flower</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="Min Price">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="Max Price">
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Plants Container -->
+        <div id="plants-container" class="row g-3">
+            <!-- Dynamic content will be inserted here -->
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="d-flex justify-content-center align-items-center mt-4">
+            <button id="prev-page" class="btn btn-outline-primary me-3">Previous</button>
+            <span id="current-page" class="fs-5">1</span>
+            <button id="next-page" class="btn btn-outline-primary ms-3">Next</button>
+        </div>
+    </div>
 
     <footer class="bg-light text-center py-3 mt-5">
-        <p>&copy; 2024 My E-Commerce Store. All rights reserved.</p>
+        <p>&copy; 2024 Plants Store. All rights reserved.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/header.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/plants.js"></script>
+
+    <script>
+        // Script to toggle the create plant modal
+        const createPlantBtn = document.getElementById('create-plant-btn');
+        const createPlantModal = new bootstrap.Modal(document.getElementById('create-plant-modal'));
+
+        createPlantBtn.addEventListener('click', () => {
+            createPlantModal.show();
+        });
+    </script>
 </body>
 
 </html>

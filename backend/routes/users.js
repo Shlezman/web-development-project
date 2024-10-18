@@ -105,8 +105,27 @@ router.post('/login', async (req, res) => {
   
       jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
         if (err) throw err;
+        res.cookie('username', user.username, { 
+            httpOnly: false, 
+            secure: true,
+            path: '/', 
+            sameSite: 'None',
+            maxAge: 3600000 });
+        res.cookie('isAdmin', user.isAdmin, { 
+            httpOnly: false, 
+            secure: true,
+            path: '/', 
+            sameSite: 'None',
+            maxAge: 3600000 });
+        res.cookie('jwt', token, {
+            httpOnly: false, 
+            secure: true,
+            path: '/', 
+            sameSite: 'None',
+            maxAge: 3600000 });
         res.json({ token });
       });
+
   
     } catch (err) {
       console.error(err.message);
