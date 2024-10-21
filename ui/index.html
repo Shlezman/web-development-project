@@ -22,47 +22,20 @@
         </div>
 
         <!-- Create Plant Modal -->
-        <div id="create-plant-modal" class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Create a New Plant</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="create-plant-form">
-                            <div class="mb-3">
-                                <label for="plant-name" class="form-label">Plant Name</label>
-                                <input type="text" class="form-control" id="plant-name" name="name" placeholder="Plant Name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="plant-description" class="form-label">Description</label>
-                                <input type="text" class="form-control" id="plant-description" name="description" placeholder="Description" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="plant-price" class="form-label">Price</label>
-                                <input type="number" class="form-control" id="plant-price" name="price" placeholder="Price" step="0.01" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="plant-category" class="form-label">Category</label>
-                                <input type="text" class="form-control" id="plant-category" name="category" placeholder="Category" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="plant-origin-country" class="form-label">Origin Country</label>
-                                <input type="text" class="form-control" id="plant-origin-country" name="originCountry" placeholder="Origin Country" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="plantType" class="form-label">Plant Type</label>
-                                <select class="form-select" id="plantType" name="plantType" required>
-                                    <option value="" disabled selected>Select plant type</option>
-                                    <option value="indoor">Indoor Plant</option>
-                                    <option value="outdoor">Outdoor Plant</option>
-                                </select>
-                            </div>                            
-                            <button type="submit" class="btn btn-success w-100">Submit</button>
-                        </form>
-                    </div>
-                </div>
+        <div id="create-plant-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span id="close-create-plant" class="close">&times;</span>
+                <h2>Create a New Plant</h2>
+                <form id="create-plant-form">
+                    <input type="text" id="plant-name" name="name" placeholder="Plant Name" required><br>
+                    <input type="text" id="plant-description" name="description" placeholder="Description" required><br>
+                    <input type="number" id="plant-price" name="price" placeholder="Price" step="0.01" required><br>
+                    <input type="text" id="plant-category" name="category" placeholder="Category" required><br>
+                    <input type="text" id="plant-origin-country" name="originCountry" placeholder="Origin Country" required><br>
+                    <label for="indoor">Indoor Plant:</label>
+                    <input type="checkbox" id="indoor" name="indoor"><br>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
             </div>
         </div>
 
