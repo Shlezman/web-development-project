@@ -22,6 +22,18 @@ router.post('/', [
     const { plants } = req.body;
 
     try {
+        // Check if user already has a cart
+        const existingCart = await Order.findOne({
+            buyer: req.user.id,
+            status: 'cart'
+        });
+
+        if (existingCart) {
+            return res.status(400).json({
+                msg: 'You already have an active cart. Please complete or update your existing cart.'
+            });
+        }
+
         // Fetch all plant details and calculate total amount
         const plantsWithDetails = await Promise.all(plants.map(async (item) => {
             const plant = await Plant.findById(item.plant);
@@ -40,7 +52,8 @@ router.post('/', [
         const newOrder = new Order({
             buyer: req.user.id,
             plants: plantsWithDetails,
-            totalAmount
+            totalAmount,
+            status: 'cart'
         });
 
         const order = await newOrder.save();
@@ -51,10 +64,54 @@ router.post('/', [
     }
 }));
 
+// Update order status to delivered
+router.patch('/:orderId/status', [
+    auth,
+    check('status', 'Status must be delivered').equals('delivered')
+], asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const orderId = req.params.orderId;
+
+    // Find the order and user
+    const order = await Order.findById(orderId);
+    const user = await User.findById(req.user.id);
+
+    if (!order) {
+        return res.status(404).json({ msg: 'Order not found' });
+    }
+
+    // Check authorization
+    if (order.buyer.toString() !== user.id) {
+        return res.status(403).json({ msg: 'Not authorized to update this order' });
+    }
+
+    // Validate current status is cart
+    if (order.status !== 'cart') {
+        return res.status(400).json({
+            msg: 'Only orders in cart status can be marked as delivered'
+        });
+    }
+
+    // Update order
+    order.status = 'delivered';
+    order.deliveryDate = new Date();
+
+    await order.save();
+
+    res.json({
+        msg: 'Order marked as delivered successfully',
+        order
+    });
+}));
+
 // Get orders (all for admin, user's orders for regular users)
 router.get('/', [
     auth,
-    query('status').optional().isIn(['cart', 'pending', 'paid', 'shipped', 'delivered']),
+    query('status').optional().isIn(['cart', 'delivered']),
     query('minAmount').optional().isFloat({ min: 0 }),
     query('maxAmount').optional().isFloat({ min: 0 }),
     query('buyerUsername').optional().isString(),
@@ -148,41 +205,7 @@ router.get('/', [
     }
 }));
 
-// Delete an order (admin only)
-router.delete('/:orderId', auth, async (req, res) => {
-    try {
-        // Fetch the user from the database
-        const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ msg: 'User not found' });
-        }
-
-        // Check if user is an admin
-        if (!user.isAdmin) {
-            return res.status(403).json({ msg: 'Not authorized. Admin access required.' });
-        }
-
-        const orderId = req.params.orderId;
-
-        // Find the order
-        const order = await Order.findById(orderId);
-        if (!order) {
-            return res.status(404).json({ msg: 'Order not found' });
-        }
-
-        // Delete the order
-        await Order.findByIdAndDelete(orderId);
-
-        res.json({ msg: 'Order deleted successfully' });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
-    }
-});
-
-
-
-// Update order
+// Update cart items
 router.patch('/:orderId', [
     auth,
     check('plants', 'Plants must be an array').isArray(),
@@ -205,8 +228,8 @@ router.patch('/:orderId', [
         return res.status(404).json({ msg: 'Order not found' });
     }
 
-    // Check if user is the order creator or an admin
-    if (!user.isAdmin && order.buyer.toString() !== user.id) {
+    // Check if user is the order creator
+    if (order.buyer.toString() !== user.id) {
         return res.status(403).json({ msg: 'Not authorized to update this order' });
     }
 
@@ -224,20 +247,16 @@ router.patch('/:orderId', [
         return {
             plant: plant._id,
             quantity: plantItem.quantity,
-            price: plant.price // Use current price
+            price: plant.price
         };
     }));
 
     order.plants = updatedPlants;
-
-    // Calculate total amount
     order.totalAmount = updatedPlants.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-    // Update the order
     await order.save();
 
     res.json({ msg: 'Order updated successfully', order: order });
 }));
-// Add more routes for updating order status, etc.
 
 module.exports = router;
