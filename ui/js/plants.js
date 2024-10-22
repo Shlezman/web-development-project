@@ -1,3 +1,5 @@
+const API_KEY = window.prompt("Please enter api key for google maps:", "");
+
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -192,7 +194,7 @@ function displayPlants(data) {
             plantsContainer.appendChild(plantCard);
 
             // Initialize the map for every plant
-            CountryMap(plant.originCountry, `country-map-${index}`, 'AIzaSyDCfZa2jXWfm_sweckOt2cgWBZxRK4WgrA');
+            CountryMap(plant.originCountry, `country-map-${index}`, API_KEY);
   
         });
 
