@@ -1,4 +1,4 @@
-const API_KEY = window.prompt("Please enter api key for google maps:", "");
+const API_KEY = atob("QUl6YVN5RENmWmEyalhXZm1fc3dlY2tPdDJjZ1dCWnhSSzRXZ3JB")
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
