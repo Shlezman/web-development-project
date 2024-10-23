@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "requirejs": "^2.3.7"
+    "requirejs": "^2.3.7",
+    "twitter-api-v2": "1.18.0"
   }
 }

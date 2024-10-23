@@ -1,3 +1,23 @@
+// twitter auth
+const { TwitterApi } = require('twitter-api-v2');
+
+const client = new TwitterApi({
+  appKey: 'YOUR_API_KEY',
+  appSecret: 'YOUR_API_SECRET_KEY',
+  accessToken: 'YOUR_ACCESS_TOKEN',
+  accessSecret: 'YOUR_ACCESS_TOKEN_SECRET',
+});
+
+//post tweet function
+async function postTweet(message) {
+    try {
+      const response = await client.v2.tweet(message);
+      console.log('Tweet posted:', response.data);
+    } catch (error) {
+      console.error('Error posting tweet:', error);
+    }
+  }
+
 //const { prefix } = require('./config');
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -36,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             console.log('Registration successful');
             window.location.href = 'login.html';
-            
+            postTweet('A new member has joined us! welcome ${username}!');
         })
         .catch(error => {
             console.error('Error:', error);
