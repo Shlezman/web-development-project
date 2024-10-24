@@ -41,7 +41,7 @@ class Header {
         return `
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
-                <a class="navbar-brand" href="index.html">Plants Store</a>
+                <a class="navbar-brand" href="index.html"><img src ="css/logo.png" alt="Plants Store Logo" width="50" height="50" class="me-2">Plants Store</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

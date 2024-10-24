@@ -47,6 +47,7 @@ main {
     border-radius: 5px;
     padding: 1rem;
     text-align: center;
+    background-color: #ddd;
 }
 
 .plant-card h2 {
