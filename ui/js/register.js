@@ -1,23 +1,22 @@
-// twitter auth
-const { TwitterApi } = require('twitter-api-v2');
+// tweet
+const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 
-const client = new TwitterApi({
-  appKey: atob("RmxWdTNCclJ5WmkyTUtnM3RCRjdZUmN1cg=="),
-  appSecret: atob("WEZMaUlzdWJqTjczYmpTVjdjTXhZdEpLRTVycjRUdWhjQUNtQ1hKZmNOeDgzbG1UMmU="),
-  accessToken: atob("MTg1MTIzOTQ4OTE0MzcwNTYwMC1KV0dCNkkwVkswZk5OZXJWQ1RxamhEb3NrVXJjY0U="),
-  accessSecret: atob("ajVFdWxYeGdja3dJWXNoSjlWNjE0NENTMjIzZEkxOEdrbW9LWnQ0SWl5QmMz")
-});
+async function postTweet(tweet) {
+  try {
+    const response = await fetch('${API_BASE_URL}/tweet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ tweet: tweet })
+    });
 
-//post tweet function
-async function postTweet(message) {
-    try {
-      const response = await client.v2.tweet(message);
-      console.log('Tweet posted:', response.data);
-    } catch (error) {
-      console.error('Error posting tweet:', error);
-    }
+    const result = await response.json();
+    console.log('Tweet posted:', result);
+  } catch (error) {
+    console.error('Error:', error);
   }
-
+}
 //const { prefix } = require('./config');
 function getCookie(name) {
     const value = `; ${document.cookie}`;
