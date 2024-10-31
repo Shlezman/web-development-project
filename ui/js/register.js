@@ -2,10 +2,10 @@
 const { TwitterApi } = require('twitter-api-v2');
 
 const client = new TwitterApi({
-  appKey: 'YOUR_API_KEY',
-  appSecret: 'YOUR_API_SECRET_KEY',
-  accessToken: 'YOUR_ACCESS_TOKEN',
-  accessSecret: 'YOUR_ACCESS_TOKEN_SECRET',
+  appKey: atob("RmxWdTNCclJ5WmkyTUtnM3RCRjdZUmN1cg=="),
+  appSecret: atob("WEZMaUlzdWJqTjczYmpTVjdjTXhZdEpLRTVycjRUdWhjQUNtQ1hKZmNOeDgzbG1UMmU="),
+  accessToken: atob("MTg1MTIzOTQ4OTE0MzcwNTYwMC1KV0dCNkkwVkswZk5OZXJWQ1RxamhEb3NrVXJjY0U="),
+  accessSecret: atob("ajVFdWxYeGdja3dJWXNoSjlWNjE0NENTMjIzZEkxOEdrbW9LWnQ0SWl5QmMz")
 });
 
 //post tweet function
