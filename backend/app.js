@@ -44,6 +44,7 @@ mongo.connect('mongodb+srv://menimamtera:Meni1234@cluster0.likp8.mongodb.net/', 
 app.use('/api/users', require('./routes/users'));
 app.use('/api/plants', require('./routes/plants'));
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/tweet', require('./routes/tweets'));
 
 // Start 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
