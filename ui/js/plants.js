@@ -53,7 +53,8 @@ document.getElementById('create-plant-form').addEventListener('submit', function
         indoor: document.getElementById('indoor').checked
     };
 
-    const token = getCookie('jwt'); 
+    const token = getCookie('jwt');
+    console.log(token)
 
     fetch(`${API_BASE_URL}/plants`, {
         method: 'POST',
