@@ -29,7 +29,6 @@ function getCookie(name) {
   }
 
 document.addEventListener('DOMContentLoaded', function() {
-    postTweet("test")
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
