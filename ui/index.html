@@ -29,20 +29,42 @@
         <!-- Create Plant Modal -->
         <div id="create-plant-modal" class="modal" style="display: none;">
             <div class="modal-content">
-                <span id="close-create-plant" class="close">&times;</span>
+                <button id="close-create-plant" class="close" aria-label="Close">&times;</button>
                 <h2>Create a New Plant</h2>
                 <form id="create-plant-form">
-                    <input type="text" id="plant-name" name="name" placeholder="Plant Name" required><br>
-                    <input type="text" id="plant-description" name="description" placeholder="Description" required><br>
-                    <input type="number" id="plant-price" name="price" placeholder="Price" step="0.01" required><br>
-                    <input type="text" id="plant-category" name="category" placeholder="Category" required><br>
-                    <input type="text" id="plant-origin-country" name="originCountry" placeholder="Origin Country" required><br>
-                    <label for="indoor">Indoor Plant:</label>
-                    <input type="checkbox" id="indoor" name="indoor"><br>
-                    <button type="submit" class="btn btn-success">Submit</button>
+                    <div class="mb-3">
+                        <label for="plant-name">Plant Name:</label>
+                        <input type="text" id="plant-name" name="name" class="form-control" placeholder="Enter plant name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plant-description">Description:</label>
+                        <textarea id="plant-description" name="description" class="form-control" placeholder="Enter plant description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plant-price">Price:</label>
+                        <input type="number" id="plant-price" name="price" class="form-control" placeholder="Enter price" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plant-category">Category:</label>
+                        <select id="plant-category" name="category" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <option value="Flower">Flower</option>
+                            <option value="Tree">Tree</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plant-origin-country">Origin Country:</label>
+                        <input type="text" id="plant-origin-country" name="originCountry" class="form-control" placeholder="Enter origin country" required>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" id="indoor" name="indoor" class="form-check-input">
+                        <label for="indoor" class="form-check-label">Indoor Plant</label>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Submit</button>
                 </form>
             </div>
         </div>
+
 
         <!-- Search Section -->
         <div id="search-section" class="section mb-4">
@@ -55,6 +77,7 @@
                     <select id="category" name="category" class="form-select">
                         <option value="">All Categories</option>
                         <option value="Flower">Flower</option>
+                        <option value="Tree">Tree</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -76,9 +99,9 @@
 
         <!-- Pagination -->
         <div id="pagination" class="d-flex justify-content-center align-items-center mt-4">
-            <button id="prev-page" class="btn btn-outline-primary me-3">Previous</button>
-            <span id="current-page" class="fs-5">1</span>
-            <button id="next-page" class="btn btn-outline-primary ms-3">Next</button>
+            <button id="prev-page" class="btn btn-outline-primary me-3" aria-label="Previous Page">Previous</button>
+            <span id="current-page" class="fs-5" aria-live="polite" style="color: aliceblue;">>1</span>
+            <button id="next-page" class="btn btn-outline-primary ms-3" aria-label="Next Page">Next</button>
         </div>
     </div>
 
