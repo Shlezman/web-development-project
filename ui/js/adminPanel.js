@@ -73,41 +73,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
     searchUsersForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        const username = document.getElementById('search-username').value;
-        const email = document.getElementById('search-email').value;
-        const isAdmin = document.getElementById('search-isAdmin').value;
-        const minCredit = document.getElementById('search-minCredit').value;
-        const maxCredit = document.getElementById('search-maxCredit').value;
-        const sort = document.getElementById('search-sort').value;
-        const page = document.getElementById('search-page').value;
-        const limit = document.getElementById('search-limit').value;
 
-        // const queryParams = new URLSearchParams({
-        //     username, email, isAdmin, minCredit, maxCredit, sort, page, limit
-        // });
+        // Collect all form values into an object
+        const formData = {
+            username: document.getElementById('search-username').value,
+            email: document.getElementById('search-email').value,
+            isAdmin: document.getElementById('search-isAdmin').value,
+            minCredit: document.getElementById('search-minCredit').value,
+            maxCredit: document.getElementById('search-maxCredit').value,
+            sort: document.getElementById('search-sort').value,
+            page: document.getElementById('search-page').value,
+            limit: document.getElementById('search-limit').value
+        };
 
+        // Create URLSearchParams, filtering out empty values
         const queryParams = new URLSearchParams();
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null && value !== undefined && value !== '') {
                 queryParams.append(key, value);
             }
         });
-        
+
+        // Make the API request
         fetch(`${API_BASE_URL}/users/search?${queryParams}`, {
             method: 'GET',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'x-auth-token': token  
+                'x-auth-token': token
             },
             credentials: 'include'
         })
-        .then(handleResponse)
-        .then(data => {
-            displayUsers(data.users);
-            showMessage('Users fetched successfully');
-            searchUsersForm.reset();
-        })
-        .catch(handleError);
+            .then(handleResponse)
+            .then(data => {
+                displayUsers(data.users);
+                showMessage('Users fetched successfully');
+                searchUsersForm.reset();
+            })
+            .catch(handleError);
     });
 
     getAllUsersButton.addEventListener('click', function() {

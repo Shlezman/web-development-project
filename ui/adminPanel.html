@@ -18,9 +18,7 @@
 
     <div id="admin-content" style="display: none;">
         <div class="container mt-4">
-            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                <a href="/ui/index.html" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Home</a>
-            </div>
+
             <h1>Admin Panel</h1>
             
             <div id="message" class="alert" style="display: none;"></div>
@@ -55,12 +53,11 @@
                     <input type="number" id="search-maxCredit" placeholder="Max Credit">
                     <select id="search-sort">
                         <option value="">Sort By</option>
-                        <option value="username">Username</option>
-                        <option value="email">Email</option>
-                        <option value="credit">Credit</option>
+                        <option value="username_asc">Username</option>
+                        <option value="credit_asc">Credit</option>
                     </select>
-                    <input type="number" id="search-page" placeholder="Page" value="1">
-                    <input type="number" id="search-limit" placeholder="Limit" value="10">
+                    <input type="number" id="search-page" placeholder="Page">
+                    <input type="number" id="search-limit" placeholder="Limit">
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
             </div>
