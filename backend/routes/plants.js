@@ -174,8 +174,8 @@ router.get('/search', [
     }
 
     const options = {
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
+        page: parseInt(page, 8),
+        limit: parseInt(limit, 8),
         populate: { path: 'seller', select: 'username' },
         sort: sortOption
     };

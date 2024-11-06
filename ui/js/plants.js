@@ -74,6 +74,7 @@ document.getElementById('create-plant-form').addEventListener('submit', function
         alert('Plant created successfully');
         document.getElementById('create-plant-modal').style.display = 'none';
         document.getElementById('create-plant-form').reset();
+        window.location.reload();  // This will reload the page
     })
     .catch(error => {
         console.error('Error:', error);
@@ -96,7 +97,8 @@ function fetchPlants() {
     if (!maxPriceInput.value) {
         queryParams.delete('maxPrice')
     }
-
+    
+    queryParams.append('page', currentPage);
 
     fetch(`${API_BASE_URL}/plants/search?${queryParams}`)
         .then(response => {
@@ -106,6 +108,7 @@ function fetchPlants() {
             return response.json();
         })
         .then(data => {
+            console.log(data)
             displayPlants(data);
         })
         .catch(error => {
@@ -141,7 +144,10 @@ function displayPlants(data) {
 
         currentPageSpan.textContent = currentPage;
         prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = !data.hasNextPage;
+        console.log(currentPage + "  "  + data.totalPages)
+        currentPage < data.totalPages 
+            ? nextPageBtn.removeAttribute('disabled') // Enable the button
+            : nextPageBtn.setAttribute('disabled', 'true'); // Disable the button
     } else {
         plantsContainer.innerHTML = '<p>No plants found.</p>';
     }

@@ -90,11 +90,12 @@ select {
 .card-title {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
-    color: #4CAF50;
+    color: white;
 }
 
 .card-text {
     margin-bottom: 0.5rem;
+    color: white;
 }
 
 #pagination {
