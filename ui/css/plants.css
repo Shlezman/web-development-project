@@ -17,7 +17,7 @@ main {
 }
 
 #search-section {
-    margin-bottom: 2rem;
+    margin-bottom: 2rem;    
 }
 
 #search-input {
@@ -28,7 +28,15 @@ main {
 #search-button {
     padding: 0.5rem 1rem;
     background-color: #28a745;
-    color: white;
+    color: white;   
+    border: none;
+    cursor: pointer;
+}
+
+.custom-btn {
+    padding: 0.5rem 1rem;
+    background-color: #28a745;
+    color: white;   
     border: none;
     cursor: pointer;
 }
