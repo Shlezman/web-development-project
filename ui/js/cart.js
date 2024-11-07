@@ -1,101 +1,110 @@
 class Cart {
     constructor() {
-        this.items = JSON.parse(localStorage.getItem('cart')) || [];
+        this.items = [];
     }
 
-    getItems(){
-        return this.items
+    // Fetch the current cart order from the backend
+    async loadCartFromBackend() {
+        const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+        const token = getCookie('jwt');
 
+        try {
+            const response = await fetch(`${API_BASE_URL}/orders?status=cart`, {
+                method: 'GET',
+                headers: {
+                    'x-auth-token': token,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+
+            if (data.orders && data.orders.length > 0) {
+                const order = data.orders[0];
+                this.items = order.plants;
+                this.orderId = order._id; // Store the order ID for later use
+                this.displayCartItems();
+            } else {
+                document.getElementById('cart-items').innerHTML = '<p>Your cart is empty.</p>';
+                document.getElementById('cart-total').innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            document.getElementById('cart-items').innerHTML = '<p>Error loading cart. Please try again.</p>';
+        }
     }
 
-    addItem(item) {
-        this.items.push(item);
-    }
+    // Display cart items and total amount
+    displayCartItems() {
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalContainer = document.getElementById('cart-total');
 
-    removeItem(itemId) {
-        this.items = this.items.filter(item => item.id !== itemId);
-    }
+        if (this.items.length === 0) {
+            cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+            cartTotalContainer.innerHTML = '<h4>Total: $0.00</h4>';
+            return;
+        }
 
-    getTotal() {
-        return this.items.reduce((total, item) => total + item.price, 0);
-    }
+        let cartHTML = '<table class="table"><thead><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th></tr></thead><tbody>';
+        let total = 0;
 
-    // Other methods as needed
-}
-
-// Usage
-const cart = new Cart();
-export default cart;
-console.log(cart.items)
-function loadCart() {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-        cart.items = JSON.parse(savedCart);
-    }
-}
-
-// Save cart to localStorage
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-// Display cart items
-function displayCartItems() {
-    const cartItemsContainer = document.getElementById('cart-items');
-    const cartTotalContainer = document.getElementById('cart-total');
-
-    if (cart.items.length === 0) {
-        cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
-        cartTotalContainer.innerHTML = '';
-        return;
-    }
-
-    let cartHTML = '<table class="table"><thead><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th><th>Action</th></tr></thead><tbody>';
-    let total = 0;
-    console.log(cart.items)
-    cart.getItems().forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        cartHTML += `
+        this.items.forEach(item => {
+            const itemTotal = item.quantity * item.plant.price;
+            total += itemTotal;
+            cartHTML += `
             <tr>
-                <td>${item.name}</td>
-                <td>$${item.price.toFixed(2)}</td>
+                <td>${item.plant.name}</td>
+                <td>$${item.plant.price.toFixed(2)}</td>
                 <td>${item.quantity}</td>
                 <td>$${itemTotal.toFixed(2)}</td>
-                <td><button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">Remove</button></td>
             </tr>
         `;
-    });
+        });
 
-    cartHTML += '</tbody></table>';
-    cartItemsContainer.innerHTML = cartHTML;
-    cartTotalContainer.innerHTML = `<h4>Total: $${total.toFixed(2)}</h4>`;
-}
+        cartHTML += '</tbody></table>';
+        cartItemsContainer.innerHTML = cartHTML;
+        cartTotalContainer.innerHTML = `<h4>Total: $${total.toFixed(2)}</h4>`;
+    }
 
-// Remove item from cart
-function removeFromCart(productId) {
-    const index = cart.findIndex(item => item.id === productId);
-    if (index !== -1) {
-        cart.splice(index, 1);
-        updateCartCount();
-        displayCartItems();
+
+    // Send request to mark the cart as delivered
+    async sendOrderToBackend() {
+        const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+        const token = getCookie('jwt');
+
+        if (!this.orderId) {
+            alert("No active cart order found.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/orders/${this.orderId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({ status: 'delivered' })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.errors?.[0]?.msg || 'Failed to place order');
+            }
+
+            alert('Order placed successfully!');
+            this.items = []; // Clear cart
+            this.displayCartItems(); // Refresh cart display
+            document.getElementById('cart-total').innerHTML = '';
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Failed to place order');
+        }
     }
 }
 
-
-
+// Initialize and load the cart
+const cart = new Cart();
 document.addEventListener('DOMContentLoaded', () => {
-    // Render header
-    renderHeader('cart');
-    loadCart();
-    displayCartItems();
-    //updateCartCount();
-
-    // Add event listener for search form
-    // const searchForm = document.getElementById('search-form');
-    // if (searchForm) {
-    //     searchForm.addEventListener('submit', handleSearch);
-    // } else {
-    //     console.error("search-form element not found");
-    // }
+    cart.loadCartFromBackend();
+    document.getElementById('sendOrderToBackend').addEventListener('click', () => cart.sendOrderToBackend());
 });

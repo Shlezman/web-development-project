@@ -128,9 +128,8 @@ router.get('/', [
     let query = {};
 
     // If not admin, only show user's orders
-    if (!user.isAdmin) {
-        query.buyer = user.id;
-    }
+    query.buyer = user.id;
+
 
     const { status, minAmount, maxAmount, buyerUsername, sort, page = 1, limit = 10 } = req.query;
 
@@ -149,11 +148,11 @@ router.get('/', [
         if (buyer) {
             query.buyer = buyer._id;
         } else {
-            return res.status(404).json({ msg: 'Buyer not found' });
+            return res.status(404).json({ msg: `Buyer with username "${buyerUsername}" not found` });
         }
     }
 
-    let sortOption = {};
+    let sortOption = { createdAt: -1 }; // Default sort by most recent
     if (sort) {
         switch (sort) {
             case 'createdAt_asc':
@@ -200,10 +199,11 @@ router.get('/', [
             totalOrders: result.totalDocs
         });
     } catch (err) {
-        console.error(err.message);
+        console.error(`Failed to fetch orders: ${err.message}`);
         res.status(500).send('Server error');
     }
 }));
+
 
 // Update cart items
 router.patch('/:orderId', [

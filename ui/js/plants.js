@@ -12,6 +12,7 @@ const prevPageBtn = document.getElementById('prev-page');
 const nextPageBtn = document.getElementById('next-page');
 const currentPageSpan = document.getElementById('current-page');
 
+let pageLimit = 8;
 let currentPage = 1;
 let totalPages = 1;
 
@@ -92,6 +93,7 @@ function fetchPlants() {
     const queryParams = new URLSearchParams(formData);
 
     // Add pagination parameters
+    queryParams.set('limit', pageLimit);
     queryParams.set('page', currentPage);
 
     // Handle empty price filters
@@ -145,6 +147,7 @@ function displayPlants(data) {
                 <p>In Stock: ${plant.inStock}</p>
                 <p>Average Rating: ${plant.avgRating}</p>
                 <p>Number of Reviews: ${plant.numReviews}</p>
+                <button class="btn btn-primary" onclick="addToCart('${plant._id}', 1)">Add to Cart</button>
             `;
             plantsContainer.appendChild(plantCard);
 
@@ -155,12 +158,103 @@ function displayPlants(data) {
         updatePaginationUI();
     } else {
         plantsContainer.innerHTML = '<p>No plants found.</p>';
-        // Reset pagination when no results are found
         currentPage = 1;
         totalPages = 1;
         updatePaginationUI();
     }
 }
+
+async function addToCart(plantId, quantity = 1) {
+    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    const token = getCookie('jwt');
+
+    // Ensure quantity is a positive integer
+    quantity = parseInt(quantity, 10);
+    if (isNaN(quantity) || quantity < 1) {
+        alert('Invalid quantity');
+        return;
+    }
+
+    try {
+        // Step 1: Check for an existing cart order
+        const cartOrders = await fetch(`${API_BASE_URL}/orders?status=cart`, {
+            method: 'GET',
+            headers: {
+                'x-auth-token': token,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json());
+
+        let plantsInCart = [];
+        if (cartOrders && cartOrders.orders.length > 0) {
+            // If a cart order exists, retrieve its plants
+            const order = cartOrders.orders[0];
+            const orderId = order._id;
+
+            // Check if the plant is already in the cart
+            let plantExists = false;
+            plantsInCart = order.plants.map(plantItem => {
+                if (plantItem.plant._id === plantId) {
+                    plantExists = true;
+                    return {
+                        plant: plantItem.plant._id,
+                        quantity: plantItem.quantity + quantity
+                    };
+                }
+                return {
+                    plant: plantItem.plant._id,
+                    quantity: plantItem.quantity
+                };
+            });
+
+            // If the plant is not in the cart, add it as a new item
+            if (!plantExists) {
+                plantsInCart.push({ plant: plantId, quantity });
+            }
+
+            // Update the existing order with the modified plants array
+            const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({ plants: plantsInCart })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.errors?.[0]?.msg || 'Failed to update cart');
+            }
+
+            alert('Plant added to your cart.');
+        } else {
+            // If no cart order exists, create a new cart order
+            const response = await fetch(`${API_BASE_URL}/orders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({
+                    plants: [{ plant: plantId, quantity }]
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.errors?.[0]?.msg || 'Failed to create cart');
+            }
+
+            alert('New cart created and plant added.');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert(error.message);
+    }
+}
+
+
 
 function updatePaginationUI() {
     currentPageSpan.textContent = `Page ${currentPage} of ${totalPages}`;

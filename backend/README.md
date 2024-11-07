@@ -113,8 +113,7 @@ All routes marked with [Admin] require the user to have admin privileges.
   - `page` (optional): Page number (default 1)
   - `limit` (optional): Number of results per page (default 10, max 100)
 - Description:
-  - Regular users: Returns only their orders
-  - Admins: Returns all orders
+  - Returns only user's orders
   - Results are paginated and can be filtered/sorted
 
 ### Update Order [Auth]

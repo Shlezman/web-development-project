@@ -49,7 +49,7 @@ class Header {
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link ${this.activeLink === 'cart' ? 'active' : ''}" href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+                            <a class="nav-link ${this.activeLink === 'cart' ? 'active' : ''}" href="cart.html">Cart</a>
                         </li>
                         ${this.renderAuthButton()}
                     </ul>
