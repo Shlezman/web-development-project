@@ -33,7 +33,6 @@ async function getMap() {
 }
 
 
-
 let pageLimit = 8;
 let currentPage = 1;
 let totalPages = 1;
@@ -139,11 +138,11 @@ function fetchPlants() {
 }
 
 
+
 async function displayPlants(data) {
     plantsContainer.empty();
     if (data.plants && data.plants.length > 0) {
-        for (let index = 0; index < data.plants.length; index++) {
-            const plant = data.plants[index];
+        $.each(data.plants, function (index, plant) {
             const plantCard = `
                 <div class="plant-card">
                     <h3>${plant.name}</h3>
