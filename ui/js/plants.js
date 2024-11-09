@@ -13,25 +13,25 @@ const prevPageBtn = $('#prev-page');
 const nextPageBtn = $('#next-page');
 const currentPageSpan = $('#current-page');
 async function getMap() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/map`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-      });
-      //const result = response.json();
-      const resJson = await response.json();
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `${API_BASE_URL}/map`,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            success: function (resJson) {
+                resolve(atob(resJson.mapKey));
+            },
+            error: function (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        });
+    });
+}
 
-      const final = atob(resJson.mapKey);
-
-      return final;
-
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
 
 
 let pageLimit = 8;
@@ -139,10 +139,11 @@ function fetchPlants() {
 }
 
 
-function displayPlants(data) {
+async function displayPlants(data) {
     plantsContainer.empty();
     if (data.plants && data.plants.length > 0) {
-        $.each(data.plants, function (index, plant) {
+        for (let index = 0; index < data.plants.length; index++) {
+            const plant = data.plants[index];
             const plantCard = `
                 <div class="plant-card">
                     <h3>${plant.name}</h3>
@@ -155,15 +156,14 @@ function displayPlants(data) {
                 </div>`;
             plantsContainer.append(plantCard);
 
-            // Initialize the map for every plant
-            getMap()
-            .then(mapKey => {
-                CountryMap(plant.originCountry, `country-map-${index}`, mapKey);;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
+            // Initialize the map for each plant
+            try {
+                const mapKey = await getMap();
+                CountryMap(plant.originCountry, `country-map-${index}`, mapKey);
+            } catch (error) {
+                console.error('Error loading map:', error);
+            }
+        }
         updatePaginationUI();
     } else {
         plantsContainer.html('<p>No plants found.</p>');
@@ -172,6 +172,7 @@ function displayPlants(data) {
         updatePaginationUI();
     }
 }
+
 
 function addToCart(plantId, quantity = 1) {
     const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
