@@ -204,6 +204,110 @@ router.get('/', [
     }
 }));
 
+// Get orders sum and group by user
+router.get('/byBuyer', [
+    auth,
+    query('status').optional().isIn(['cart', 'delivered']),
+    query('minAmount').optional().isFloat({ min: 0 }),
+    query('maxAmount').optional().isFloat({ min: 0 }),
+    query('buyerUsername').optional().isString(),
+    query('sort').optional().isIn(['createdAt_asc', 'createdAt_desc', 'totalAmount_asc', 'totalAmount_desc']),
+    query('page').optional().isInt({ min: 1 }),
+    query('limit').optional().isInt({ min: 1, max: 100 })
+], asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const user = await User.findById(req.user.id);
+    let query = {};
+
+    // If not admin, only show user's orders
+    query.buyer = user.id;
+
+    const { status, minAmount, maxAmount, buyerUsername, sort, page = 1, limit = 10 } = req.query;
+
+    if (status) {
+        query.status = status;
+    }
+
+    if (minAmount || maxAmount) {
+        query.totalAmount = {};
+        if (minAmount) query.totalAmount.$gte = parseFloat(minAmount);
+        if (maxAmount) query.totalAmount.$lte = parseFloat(maxAmount);
+    }
+
+    if (buyerUsername) {
+        const buyer = await User.findOne({ username: buyerUsername });
+        if (buyer) {
+            query.buyer = buyer._id;
+        } else {
+            return res.status(404).json({ msg: `Buyer with username "${buyerUsername}" not found` });
+        }
+    }
+
+    let sortOption = { createdAt: -1 }; // Default sort by most recent
+    if (sort) {
+        switch (sort) {
+            case 'createdAt_asc':
+                sortOption = { createdAt: 1 };
+                break;
+            case 'createdAt_desc':
+                sortOption = { createdAt: -1 };
+                break;
+            case 'totalAmount_asc':
+                sortOption = { totalAmount: 1 };
+                break;
+            case 'totalAmount_desc':
+                sortOption = { totalAmount: -1 };
+                break;
+        }
+    }
+
+    try {
+        const pipeline = [
+            { $match: query },
+            {
+                $group: {
+                    _id: "$buyer", // Group by user ID
+                    totalAmountSum: { $sum: "$totalAmount" }, // Sum totalAmount for each user
+                    orderCount: { $sum: 1 } // Count of orders per user
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "buyerInfo"
+                }
+            },
+            {
+                $unwind: "$buyerInfo"
+            },
+            {
+                $project: {
+                    userId: "$_id",
+                    totalAmountSum: 1,
+                    orderCount: 1,
+                    buyerUsername: "$buyerInfo.username"
+                }
+            },
+            { $sort: sortOption }
+        ];
+
+        const result = await Order.aggregate(pipeline).exec();
+        res.json({
+            users: result,
+            totalUsers: result.length
+        });
+    } catch (err) {
+        console.error(`Failed to fetch aggregated order data: ${err.message}`);
+        res.status(500).send('Server error');
+    }
+}));
+
 
 // Update cart items
 router.patch('/:orderId', [
