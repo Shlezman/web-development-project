@@ -126,12 +126,22 @@ router.get('/', [
 
     const user = await User.findById(req.user.id);
     let query = {};
+    const { status, minAmount, maxAmount, buyerUsername, sort, page = 1, limit = 10 } = req.query;
 
     // If not admin, only show user's orders
-    query.buyer = user.id;
+    // If admin and userId is provided in query, show that user's orders
+    if (!user.isAdmin || user.isAdmin && !buyerUsername) {
+        query.buyer = user.id;
+    } else if (buyerUsername) {
+        const buyer = await User.findOne({ username: buyerUsername });
+        if (buyer) {
+            query.buyer = buyer._id;
+        } else {
+            return res.status(404).json({ msg: `Buyer with username "${buyerUsername}" not found` });
+        }
+    }
 
 
-    const { status, minAmount, maxAmount, buyerUsername, sort, page = 1, limit = 10 } = req.query;
 
     if (status) {
         query.status = status;
@@ -143,14 +153,6 @@ router.get('/', [
         if (maxAmount) query.totalAmount.$lte = parseFloat(maxAmount);
     }
 
-    if (buyerUsername) {
-        const buyer = await User.findOne({ username: buyerUsername });
-        if (buyer) {
-            query.buyer = buyer._id;
-        } else {
-            return res.status(404).json({ msg: `Buyer with username "${buyerUsername}" not found` });
-        }
-    }
 
     let sortOption = { createdAt: -1 }; // Default sort by most recent
     if (sort) {

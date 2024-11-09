@@ -144,9 +144,6 @@ function displayPlants(data) {
                 <p>Description: ${plant.description}</p>
                 <p>Origin Country: ${plant.originCountry}</p>
                 <div id="country-map-${index}" class="country-map"></div>
-                <p>In Stock: ${plant.inStock}</p>
-                <p>Average Rating: ${plant.avgRating}</p>
-                <p>Number of Reviews: ${plant.numReviews}</p>
                 <button class="btn btn-primary" onclick="addToCart('${plant._id}', 1)">Add to Cart</button>
             `;
             plantsContainer.appendChild(plantCard);

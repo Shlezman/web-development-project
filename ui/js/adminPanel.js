@@ -3,6 +3,10 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
+const viewUserOrders=(userId, username)=> {
+    // Redirect to order-history.html with userId parameter
+    window.location.href = `order-history.html?adminView=true&username=${username}`;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     renderHeader('admin'); 
@@ -79,8 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
             username: document.getElementById('search-username').value,
             email: document.getElementById('search-email').value,
             isAdmin: document.getElementById('search-isAdmin').value,
-            minCredit: document.getElementById('search-minCredit').value,
-            maxCredit: document.getElementById('search-maxCredit').value,
             sort: document.getElementById('search-sort').value,
             page: document.getElementById('search-page').value,
             limit: document.getElementById('search-limit').value
@@ -142,23 +144,31 @@ document.addEventListener('DOMContentLoaded', function() {
         showMessage(error.message || 'An error occurred', true);
     }
 
+
     function displayUsers(users) {
         usersListElement.innerHTML = '';
         users.forEach(user => {
             const userDiv = document.createElement('div');
             userDiv.className = 'card mb-2';
             userDiv.innerHTML = `
-                <div class="card-body">
-                    <h5 class="card-title">${user.username}</h5>
-                    <p class="card-text">
-                        Email: ${user.email}<br>
-                        Admin: ${user.isAdmin ? 'Yes' : 'No'}<br>
-                        Credit: ${user.credit}<br>
-                        UserID: ${user._id}
-                    </p>
+            <div class="card-body">
+                <h5 class="card-title">${user.username}</h5>
+                <p class="card-text">
+                    Email: ${user.email}<br>
+                    Admin: ${user.isAdmin ? 'Yes' : 'No'}<br>
+                    UserID: ${user._id}
+                </p>
+                <div class="mt-2">
+                    <button onclick="viewUserOrders('${user._id}', '${user.username}')" class="btn btn-info view-orders-btn" 
+                            >
+                        View Order History
+                    </button>
                 </div>
-            `;
+            </div>
+        `;
             usersListElement.appendChild(userDiv);
         });
     }
+
+
 });
