@@ -142,7 +142,7 @@ function fetchPlants() {
 async function displayPlants(data) {
     plantsContainer.empty();
     if (data.plants && data.plants.length > 0) {
-        $.each(data.plants, function (index, plant) {
+        $.each(data.plants, async function (index, plant) {
             const plantCard = `
                 <div class="plant-card">
                     <h3>${plant.name}</h3>
@@ -162,7 +162,7 @@ async function displayPlants(data) {
             } catch (error) {
                 console.error('Error loading map:', error);
             }
-        }
+        })
         updatePaginationUI();
     } else {
         plantsContainer.html('<p>No plants found.</p>');

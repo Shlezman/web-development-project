@@ -134,35 +134,35 @@ $(document).ready(function () {
     function displayUsers(users) {
         usersListElement.empty();
         users.forEach(user => {
-            const userDiv = document.createElement('div');
-            userDiv.className = 'card mb-2';
-            userDiv.innerHTML = `
-            <div class="card-body bg-white text-dark p-4 border border-light shadow-sm rounded-lg">
-                <!-- Title and Admin Badge -->
-                <h5 class="card-title d-flex justify-content-between align-items-center mb-3">
-                    <span class="font-weight-bold">${user.username}</span>
-                    <span class="badge badge-${user.isAdmin ? 'success' : 'secondary'} font-weight-normal">
-                        ${user.isAdmin ? 'Admin' : 'User'}
-                    </span>
-                </h5>
-                
-                <!-- User Info -->
-                <p class="card-text text-muted mb-4">
-                    <i class="bi bi-envelope"></i> <strong>${user.email}</strong> <br>
-                    <i class="bi bi-person-badge"></i> <strong>UserID:</strong> ${user._id}
-                </p>
-                
-                <!-- Button Section -->
-                <div class="mt-3">
-                    <button onclick="viewUserOrders('${user._id}', '${user.username}')" 
-                            class="btn btn-success btn-lg btn-block hover-green transition-all">
-                        <i class="bi bi-box-arrow-in-right"></i> View Order History
-                    </button>
+            const userDiv = `
+            <div class="card mb-2">
+                <div class="card-body bg-white text-dark p-4 border border-light shadow-sm rounded-lg">
+                    <!-- Title and Admin Badge -->
+                    <h5 class="card-title d-flex justify-content-between align-items-center mb-3">
+                        <span class="font-weight-bold">${user.username}</span>
+                        <span class="badge badge-${user.isAdmin ? 'success' : 'secondary'} font-weight-normal">
+                            ${user.isAdmin ? 'Admin' : 'User'}
+                        </span>
+                    </h5>
+                    
+                    <!-- User Info -->
+                    <p class="card-text text-muted mb-4">
+                        <i class="bi bi-envelope"></i> <strong>${user.email}</strong> <br>
+                        <i class="bi bi-person-badge"></i> <strong>UserID:</strong> ${user._id}
+                    </p>
+                    
+                    <!-- Button Section -->
+                    <div class="mt-3">
+                        <button onclick="viewUserOrders('${user._id}', '${user.username}')" 
+                                class="btn btn-success btn-lg btn-block hover-green transition-all">
+                            <i class="bi bi-box-arrow-in-right"></i> View Order History
+                        </button>
+                    </div>
                 </div>
             </div>
-
         `;
-            usersListElement.appendChild(userDiv);
+            usersListElement.append(userDiv);
         });
     }
+
 });
