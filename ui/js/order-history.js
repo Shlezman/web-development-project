@@ -29,35 +29,30 @@ class OrderHistory {
                 <button class="btn btn-primary" onclick="window.location.href='adminPanel.html'">
                     Back to Admin Panel
                 </button>
-            </div>
-        `;
+            </div>`;
             filterSection.appendChild(backButton);
         } else if (this.isAdminView && !isAdmin) {
             window.location.href = 'order-history.html';
         }
 
-        // Event listener for sort dropdown
-        document.getElementById('sort').addEventListener('change', () => {
+        $('#sort').on('change', () => {
             this.currentPage = 1;
             this.fetchOrders();
         });
 
-        // Event listener for limit dropdown
-        document.getElementById('limit').addEventListener('change', () => {
+        $('#limit').on('change', () => {
             this.currentPage = 1;
             this.fetchOrders();
         });
 
-        // Event listener for previous button
-        document.getElementById('prev-page').addEventListener('click', () => {
+        $('#prev-page').on('click', () => {
             if (this.currentPage > 1) {
                 this.currentPage -= 1;
                 this.fetchOrders();
             }
         });
 
-        // Event listener for next button
-        document.getElementById('next-page').addEventListener('click', () => {
+        $('#next-page').on('click', () => {
             if (this.currentPage < this.totalPages) {
                 this.currentPage += 1;
                 this.fetchOrders();
@@ -65,66 +60,58 @@ class OrderHistory {
         });
     }
 
-    async fetchOrders() {
+    fetchOrders() {
         const token = getCookie('jwt');
-        const sort = document.getElementById('sort').value;
-        const limit = document.getElementById('limit').value;
+        const sort = $('#sort').val();
+        const limit = $('#limit').val();
 
-        const queryParams = new URLSearchParams({
-            page: this.currentPage,  // Ensure currentPage is used here
-            limit,
-            sort,
+        const queryParams = {
+            page: this.currentPage,
+            limit: limit,
+            sort: sort,
             status: 'delivered'
-        });
+        };
 
         if (this.isAdminView && this.username) {
-            queryParams.append('buyerUsername', this.username);
+            queryParams.buyerUsername = this.username;
         }
 
-        try {
-            const response = await fetch(`${this.API_BASE_URL}/orders?${queryParams}`, {
-                method: 'GET',
-                headers: {
-                    'x-auth-token': token,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch orders');
+        $.ajax({
+            url: `${this.API_BASE_URL}/orders`,
+            method: 'GET',
+            headers: {
+                'x-auth-token': token,
+                'Content-Type': 'application/json'
+            },
+            data: queryParams,
+            success: (data) => {
+                this.totalPages = data.totalPages;
+                this.displayOrders(data);
+                this.updatePaginationUI();
+            },
+            error: (jqXHR) => {
+                console.error('Error fetching orders:', jqXHR);
+                $('#orders-container').html('<div class="alert alert-danger">Error loading orders. Please try again later.</div>');
             }
-
-            const data = await response.json();
-            this.totalPages = data.totalPages;
-            this.displayOrders(data);
-            this.updatePaginationUI();
-        } catch (error) {
-            console.error('Error fetching orders:', error);
-            document.getElementById('orders-container').innerHTML =
-                '<div class="alert alert-danger">Error loading orders. Please try again later.</div>';
-        }
+        });
     }
 
-
     displayOrders(data) {
-        const container = document.getElementById('orders-container');
-        container.innerHTML = '';
+        const container = $('#orders-container');
+        container.empty();
 
         if (!data.orders || data.orders.length === 0) {
-            container.innerHTML = '<div class="alert alert-info">No completed orders found.</div>';
+            container.html('<div class="alert alert-info">No completed orders found.</div>');
             return;
         }
 
         data.orders.forEach(order => {
             const orderCard = this.createOrderCard(order);
-            container.appendChild(orderCard);
+            container.append(orderCard);
         });
     }
 
     createOrderCard(order) {
-        const card = document.createElement('div');
-        card.className = 'order-card';
-
         const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -133,13 +120,8 @@ class OrderHistory {
             minute: '2-digit'
         });
 
-        const deliveryDate = new Date(order.deliveryDate).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-
-        card.innerHTML = `
+        const orderCardHTML = `
+        <div class="order-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h5>Order #${order._id.slice(-8).toUpperCase()}</h5>
@@ -149,12 +131,16 @@ class OrderHistory {
             </div>
             <hr>
             <div class="order-items">
-                ${order.plants.map(item => `
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>${item.plant.name} × ${item.quantity}</span>
-                        <span>$${(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                `).join('')}
+                ${order.plants.map(item => {
+            const plantName = item.plant ? item.plant.name : 'Unknown Plant'; // Fallback for null plant
+            const plantTotal = item.plant ? (item.price * item.quantity).toFixed(2) : 'N/A';
+            return `
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>${plantName} × ${item.quantity}</span>
+                            <span>$${plantTotal}</span>
+                        </div>
+                    `;
+        }).join('')}
             </div>
             <hr>
             <div class="d-flex justify-content-between align-items-center">
@@ -163,24 +149,19 @@ class OrderHistory {
                     <strong>$${order.totalAmount.toFixed(2)}</strong>
                 </div>
             </div>
-        `;
-
-        return card;
+        </div>`;
+        return $(orderCardHTML);
     }
+
 
     updatePaginationUI() {
-        const pageInfo = document.getElementById('page-info');
-        const prevBtn = document.getElementById('prev-page');
-        const nextBtn = document.getElementById('next-page');
-
-        pageInfo.textContent = `Page ${this.currentPage} of ${this.totalPages}`;
-        prevBtn.disabled = this.currentPage <= 1;
-        nextBtn.disabled = this.currentPage >= this.totalPages;
+        $('#page-info').text(`Page ${this.currentPage} of ${this.totalPages}`);
+        $('#prev-page').prop('disabled', this.currentPage <= 1);
+        $('#next-page').prop('disabled', this.currentPage >= this.totalPages);
     }
-
 }
 
 // Initialize order history when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+$(document).ready(() => {
     new OrderHistory();
 });

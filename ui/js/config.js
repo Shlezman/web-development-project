@@ -1,2 +1,0 @@
-export const prefix = "https://bug-free-engine-x9j4gp9pw5v3r6g-3000.app.github.dev" //"http://localhost:3000"
-export const fe_prefix = "https://bug-free-engine-x9j4gp9pw5v3r6g-5502.app.github.dev/ui" //http://localhost:5500
