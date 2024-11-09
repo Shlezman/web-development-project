@@ -2,7 +2,7 @@ class Header {
     constructor(activeLink = '') {
         this.activeLink = activeLink;
         this.user = getCookie('username');
-        this.isAdmin = getCookie('isAdmin');
+        this.isAdmin = getCookie('isAdmin') === 'true';
     }
 
     renderAuthButton() {
@@ -23,6 +23,12 @@ class Header {
                 </div>
                 <li class="nav-item">
                 <a class="nav-link" href="seller.html">Seller</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link ${this.activeLink === 'cart' ? 'active' : ''}" href="cart.html">Cart</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="order-history.html">Order History</a>
                 </li>
             `;
         } else {
@@ -48,9 +54,7 @@ class Header {
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link ${this.activeLink === 'cart' ? 'active' : ''}" href="cart.html">Cart</a>
-                        </li>
+                        
                         ${this.renderAuthButton()}
                     </ul>
                 </div>

@@ -31,7 +31,6 @@ function renderProductTable(products) {
         row.innerHTML = `
             <td>${product.name}</td>
             <td><input type="number" value="${product.price.toFixed(2)}" id="price-${product._id}" onchange="updatePrice('${product._id}', this)" /></td>
-            <td>${product.stock}</td>
             <td>
                 <button onclick="editProduct('${product._id}')">Save Changes</button>
                 <button onclick="deletePlant('${product._id}')">Delete</button>
