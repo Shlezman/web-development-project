@@ -25,118 +25,115 @@
 </head>
 
 <body>
-    <video autoplay muted loop id="Video">
-        <source src="./css/plants.mp4" type="video/mp4">
-      </video>
-    <header id="header" class="bg-light p-3 shadow-sm">
-        <h1 class="text-center">Plant Store</h1>
-    </header>
+<video autoplay muted loop id="Video">
+    <source src="./css/plants.mp4" type="video/mp4">
+</video>
+<header id="header" class="bg-light p-3 shadow-sm">
+    <h1 class="text-center">Plant Store</h1>
+</header>
 
-    <div role="main" class="container mt-4">
-        <!-- Create Plant Button -->
-        <div class="d-flex justify-content-end mb-3">
-            <button id="create-plant-btn" class="btn btn-success">Create Plant</button>
-        </div>
+<div role="main" class="container mt-4">
+    <!-- Create Plant Button -->
+    <div class="d-flex justify-content-end mb-3">
+        <button id="create-plant-btn" class="btn btn-success">Create Plant</button>
+    </div>
 
-        <!-- Create Plant Modal -->
-        <div id="create-plant-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <button id="close-create-plant" class="close" aria-label="Close">&times;</button>
-                <h2>Create a New Plant</h2>
-                <form id="create-plant-form">
-                    <div class="mb-3">
-                        <label for="plant-name">Plant Name:</label>
-                        <input type="text" id="plant-name" name="name" class="form-control" placeholder="Enter plant name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="plant-description">Description:</label>
-                        <textarea id="plant-description" name="description" class="form-control" placeholder="Enter plant description" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="plant-price">Price:</label>
-                        <input type="number" id="plant-price" name="price" class="form-control" placeholder="Enter price" step="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="plant-category">Category:</label>
-                        <select id="plant-category" name="category" class="form-select" required>
-                            <option value="">Select Category</option>
-                            <option value="Flower">Flower</option>
-                            <option value="Tree">Tree</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="plant-origin-country">Origin Country:</label>
-                        <input type="text" id="plant-origin-country" name="originCountry" class="form-control" placeholder="Enter origin country" required>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input type="checkbox" id="indoor" name="indoor" class="form-check-input">
-                        <label for="indoor" class="form-check-label">Indoor Plant</label>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">Submit</button>
-                </form>
-            </div>
-        </div>
-
-
-        <!-- Search Section -->
-        <div id="search-section" class="section mb-4">
-            <h2 class="mb-3" style="color: aliceblue;">Search Plants</h2>
-            <form id="search-form" class="row g-3">
-                <div class="col-md-4">
-                    <input type="text" class="form-control" id="q" name="q" placeholder="Search term">
+    <!-- Create Plant Modal -->
+    <div id="create-plant-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <button id="close-create-plant" class="close" aria-label="Close">&times;</button>
+            <h2>Create a New Plant</h2>
+            <form id="create-plant-form">
+                <div class="mb-3">
+                    <label for="plant-name">Plant Name:</label>
+                    <input type="text" id="plant-name" name="name" class="form-control" placeholder="Enter plant name" required>
                 </div>
-                <div class="col-md-3">
-                    <select id="category" name="category" class="form-select">
-                        <option value="">All Categories</option>
+                <div class="mb-3">
+                    <label for="plant-description">Description:</label>
+                    <textarea id="plant-description" name="description" class="form-control" placeholder="Enter plant description" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="plant-price">Price:</label>
+                    <input type="number" id="plant-price" name="price" class="form-control" placeholder="Enter price" step="0.01" required>
+                </div>
+                <div class="mb-3">
+                    <label for="plant-category">Category:</label>
+                    <select id="plant-category" name="category" class="form-select" required>
+                        <option value="">Select Category</option>
                         <option value="Flower">Flower</option>
                         <option value="Tree">Tree</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="Min Price">
+                <div class="mb-3">
+                    <label for="plant-origin-country">Origin Country:</label>
+                    <input type="text" id="plant-origin-country" name="originCountry" class="form-control" placeholder="Enter origin country" required>
                 </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="Max Price">
-                </div>
-                <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary w-100 custom-btn">Search</button>
-                </div>
+                <button type="submit" class="btn btn-success w-100">Submit</button>
             </form>
-        </div>
-
-        <!-- Plants Container -->
-        <div id="plants-container" class="row g-3">
-            <!-- Dynamic content will be inserted here -->
-        </div>
-
-        <!-- Pagination -->
-        <div id="pagination" class="d-flex justify-content-center align-items-center mt-4">
-            <button id="prev-page" class="btn btn-outline-primary me-3" aria-label="Previous Page">Previous</button>
-            <span id="current-page" class="fs-5" aria-live="polite" style="color: aliceblue;">>1</span>
-            <button id="next-page" class="btn btn-outline-primary ms-3" aria-label="Next Page">Next</button>
         </div>
     </div>
 
-    <footer class="bg-light text-center py-3">
-        <p>&copy; 2024 Plants Store. All rights reserved.</p>
-    </footer>
+    <!-- Search Section -->
+    <div id="search-section" class="section mb-4">
+        <h2 class="mb-3" style="color: aliceblue;">Search Plants</h2>
+        <form id="search-form" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="q" name="q" placeholder="Search term">
+            </div>
+            <div class="col-md-3">
+                <select id="category" name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    <option value="Flower">Flower</option>
+                    <option value="Tree">Tree</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="Min Price">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="Max Price">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100 custom-btn">Search</button>
+            </div>
+        </form>
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/header.js"></script>
-    <script src="js/plants.js"></script>
-    <script src="js/video.js"></script>
-    <script src="js/map.js"></script>
+    <!-- Plants Container -->
+    <div id="plants-container" class="row g-3">
+        <!-- Dynamic content will be inserted here -->
+    </div>
 
-    <script>
-        // Script to toggle the create plant modal
-        const createPlantBtn = document.getElementById('create-plant-btn');
-        //const createPlantModal = new bootstrap.Modal(document.getElementById('create-plant-modal'));
-        const createPlantModal = new bootstrap.Modal(document.getElementById('create-plant-modal'), {
-                                                    backdrop: false});
-        createPlantBtn.addEventListener('click', () => {
-            createPlantModal.show();
+    <!-- Pagination -->
+    <div id="pagination" class="d-flex justify-content-center align-items-center mt-4">
+        <button id="prev-page" class="btn btn-outline-primary me-3" aria-label="Previous Page">Previous</button>
+        <span id="current-page" class="fs-5" aria-live="polite" style="color: aliceblue;">1</span>
+        <button id="next-page" class="btn btn-outline-primary ms-3" aria-label="Next Page">Next</button>
+    </div>
+</div>
+
+<footer class="bg-light text-center py-3">
+    <p>&copy; 2024 Plants Store. All rights reserved.</p>
+</footer>
+
+<!-- Load jQuery before your custom JavaScript files -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/header.js"></script>
+<script src="js/plants.js"></script>
+<script src="js/video.js"></script>
+<script src="js/map.js"></script>
+
+<script>
+    // jQuery to toggle the create plant modal
+    $(document).ready(function () {
+        $('#create-plant-btn').on('click', function () {
+            $('#create-plant-modal').show();
         });
-    </script>
+        $('#close-create-plant').on('click', function () {
+            $('#create-plant-modal').hide();
+        });
+    });
+</script>
 </body>
-
 </html>

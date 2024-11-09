@@ -3,150 +3,136 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
-const viewUserOrders=(userId, username)=> {
-    // Redirect to order-history.html with userId parameter
+
+const viewUserOrders = (userId, username) => {
     window.location.href = `order-history.html?adminView=true&username=${username}`;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    renderHeader('admin'); 
+$(document).ready(function () {
+    renderHeader('admin');
     const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
-    const adminContent = document.getElementById('admin-content');
-    const unauthorizedMessage = document.getElementById('unauthorized-message');
-    const messageElement = document.getElementById('message');
-    const makeAdminForm = document.getElementById('make-admin-form');
-    const deleteUserForm = document.getElementById('delete-user-form');
-    const searchUsersForm = document.getElementById('search-users-form');
-    const getAllUsersButton = document.getElementById('get-all-users');
-    const usersListElement = document.getElementById('users-list');
+    const adminContent = $('#admin-content');
+    const unauthorizedMessage = $('#unauthorized-message');
+    const messageElement = $('#message');
+    const makeAdminForm = $('#make-admin-form');
+    const deleteUserForm = $('#delete-user-form');
+    const searchUsersForm = $('#search-users-form');
+    const getAllUsersButton = $('#get-all-users');
+    const usersListElement = $('#users-list');
 
     const isAdmin = getCookie('isAdmin') === 'true';
-    const token = getCookie('jwt');  
+    const token = getCookie('jwt');
 
     if (!isAdmin || !token) {
-        adminContent.style.display = 'none';
-        unauthorizedMessage.style.display = 'block';
+        adminContent.hide();
+        unauthorizedMessage.show();
         return;
     }
 
-    adminContent.style.display = 'block';
-    unauthorizedMessage.style.display = 'none';
+    adminContent.show();
+    unauthorizedMessage.hide();
 
     function showMessage(message, isError = false) {
-        messageElement.textContent = message;
-        messageElement.className = isError ? 'alert alert-danger' : 'alert alert-success';
-        messageElement.style.display = 'block';
-        setTimeout(() => messageElement.style.display = 'none', 5000);
+        messageElement.text(message);
+        messageElement.removeClass('alert-success alert-danger').addClass(isError ? 'alert alert-danger' : 'alert alert-success').show();
+        setTimeout(() => messageElement.hide(), 5000);
     }
 
-    makeAdminForm.addEventListener('submit', function(e) {
+    makeAdminForm.on('submit', function (e) {
         e.preventDefault();
-        const userId = document.getElementById('make-admin-userId').value;
-        fetch(`${API_BASE_URL}/users/make-admin/${userId}`, {
+        const userId = $('#make-admin-userId').val();
+
+        $.ajax({
+            url: `${API_BASE_URL}/users/make-admin/${userId}`,
             method: 'PUT',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'x-auth-token': token  
+                'x-auth-token': token
             },
-            credentials: 'include'
-        })
-        .then(handleResponse)
-        .then(data => {
-            showMessage('User made admin successfully');
-            makeAdminForm.reset();})
-        .catch(handleError);
+            success: function (data) {
+                showMessage('User made admin successfully');
+                makeAdminForm[0].reset();
+            },
+            error: handleError
+        });
     });
 
-    deleteUserForm.addEventListener('submit', function(e) {
+    deleteUserForm.on('submit', function (e) {
         e.preventDefault();
-        const userId = document.getElementById('delete-userId').value;
-        fetch(`${API_BASE_URL}/users/${userId}`, {
+        const userId = $('#delete-userId').val();
+
+        $.ajax({
+            url: `${API_BASE_URL}/users/${userId}`,
             method: 'DELETE',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'x-auth-token': token  
+                'x-auth-token': token
             },
-            credentials: 'include'
-        })
-        .then(handleResponse)
-        .then(data => {
-            showMessage('User deleted successfully');
-            deleteUserForm.reset();})
-        .catch(handleError);
+            success: function (data) {
+                showMessage('User deleted successfully');
+                deleteUserForm[0].reset();
+            },
+            error: handleError
+        });
     });
 
-    searchUsersForm.addEventListener('submit', function(e) {
+    searchUsersForm.on('submit', function (e) {
         e.preventDefault();
 
-        // Collect all form values into an object
         const formData = {
-            username: document.getElementById('search-username').value,
-            email: document.getElementById('search-email').value,
-            isAdmin: document.getElementById('search-isAdmin').value,
-            sort: document.getElementById('search-sort').value,
-            page: document.getElementById('search-page').value,
-            limit: document.getElementById('search-limit').value
+            username: $('#search-username').val(),
+            email: $('#search-email').val(),
+            isAdmin: $('#search-isAdmin').val(),
+            sort: $('#search-sort').val(),
+            page: $('#search-page').val(),
+            limit: $('#search-limit').val()
         };
 
-        // Create URLSearchParams, filtering out empty values
-        const queryParams = new URLSearchParams();
-        Object.entries(formData).forEach(([key, value]) => {
-            if (value !== null && value !== undefined && value !== '') {
-                queryParams.append(key, value);
-            }
+        const queryParams = {};
+        $.each(formData, function (key, value) {
+            if (value) queryParams[key] = value;
         });
 
-        // Make the API request
-        fetch(`${API_BASE_URL}/users/search?${queryParams}`, {
+        $.ajax({
+            url: `${API_BASE_URL}/users/search`,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'x-auth-token': token
             },
-            credentials: 'include'
-        })
-            .then(handleResponse)
-            .then(data => {
+            data: queryParams,
+            success: function (data) {
                 displayUsers(data.users);
                 showMessage('Users fetched successfully');
-                searchUsersForm.reset();
-            })
-            .catch(handleError);
-    });
-
-    getAllUsersButton.addEventListener('click', function() {
-        fetch(`${API_BASE_URL}/users/all`, {
-            method: 'GET',
-            headers: { 
-                'Content-Type': 'application/json',
-                'x-auth-token': token  
+                searchUsersForm[0].reset();
             },
-            credentials: 'include'
-        })
-        .then(handleResponse)
-        .then(data => {
-            displayUsers(data);
-            showMessage('All users fetched successfully');
-        })
-        .catch(handleError);
+            error: handleError
+        });
     });
 
-    function handleResponse(response) {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw errorData;
-            });
-        }
-        return response.json();
-    }
+    getAllUsersButton.on('click', function () {
+        $.ajax({
+            url: `${API_BASE_URL}/users/all`,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            success: function (data) {
+                displayUsers(data);
+                showMessage('All users fetched successfully');
+            },
+            error: handleError
+        });
+    });
 
     function handleError(error) {
-        showMessage(error.message || 'An error occurred', true);
+        const errorMessage = error.responseJSON?.errors?.[0]?.msg || 'An error occurred';
+        showMessage(errorMessage, true);
     }
 
-
     function displayUsers(users) {
-        usersListElement.innerHTML = '';
+        usersListElement.empty();
         users.forEach(user => {
             const userDiv = document.createElement('div');
             userDiv.className = 'card mb-2';
@@ -179,6 +165,4 @@ document.addEventListener('DOMContentLoaded', function() {
             usersListElement.appendChild(userDiv);
         });
     }
-
-
 });
