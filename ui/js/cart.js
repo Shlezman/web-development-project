@@ -5,7 +5,8 @@ class Cart {
 
     // Fetch the current cart order from the backend
     async loadCartFromBackend() {
-        const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+        const API_BASE_URL = `${window.location.origin}/api`;
+
         const token = getCookie('jwt');
 
         try {
@@ -68,7 +69,7 @@ class Cart {
 
     // Send request to mark the cart as delivered
     async sendOrderToBackend() {
-        const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+        const API_BASE_URL = `${window.location.origin}/api`;
         const token = getCookie('jwt');
 
         if (!this.orderId) {

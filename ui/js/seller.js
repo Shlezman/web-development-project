@@ -1,6 +1,6 @@
 //const { error } = require("console");
 
-const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+const API_BASE_URL = `${window.location.origin}/api`;
 const isAdmin = getCookie('isAdmin') === 'true';
 const token = getCookie('jwt');  
 
@@ -199,7 +199,7 @@ document.getElementById('close-create-plant').addEventListener('click', function
 
 document.getElementById('create-plant-form').addEventListener('submit', function(e) {
     e.preventDefault();
-    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    const API_BASE_URL = `${window.location.origin}/api`;
     
     const plantData = {
         name: document.getElementById('plant-name').value,

@@ -46,7 +46,8 @@ document.getElementById('close-create-plant').addEventListener('click', function
 
 document.getElementById('create-plant-form').addEventListener('submit', function(e) {
     e.preventDefault();
-    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    const API_BASE_URL = `${window.location.origin}/api`;
+
 
     const plantData = {
         name: document.getElementById('plant-name').value,
@@ -88,7 +89,7 @@ document.getElementById('create-plant-form').addEventListener('submit', function
 
 function fetchPlants() {
     const formData = new FormData(searchForm);
-    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    const API_BASE_URL = `${window.location.origin}/api`;
 
     const queryParams = new URLSearchParams(formData);
 
@@ -165,7 +166,7 @@ function displayPlants(data) {
 }
 
 async function addToCart(plantId, quantity = 1) {
-    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    const API_BASE_URL = `${window.location.origin}/api`;
     const token = getCookie('jwt');
 
     // Ensure quantity is a positive integer

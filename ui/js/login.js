@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+        const API_BASE_URL = `${window.location.origin}/api`;
 
 
         fetch(`${API_BASE_URL}/users/login`, {

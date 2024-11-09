@@ -1,6 +1,6 @@
 const loginForm = document.getElementById('register-form');
 const messageElement = document.getElementById('register-message');
-const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+const API_BASE_URL = `${window.location.origin}/api`;
 const token = getCookie('jwt');
 
 // tweet

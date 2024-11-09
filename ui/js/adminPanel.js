@@ -6,7 +6,7 @@ function getCookie(name) {
 
 document.addEventListener('DOMContentLoaded', function() {
     renderHeader('admin'); 
-    const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    const API_BASE_URL = `${window.location.origin}/api`;
     const adminContent = document.getElementById('admin-content');
     const unauthorizedMessage = document.getElementById('unauthorized-message');
     const messageElement = document.getElementById('message');
