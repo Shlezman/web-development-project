@@ -205,11 +205,9 @@ router.get('/', [
 }));
 
 // Get orders sum and group by user
-router.get('/byUser', [
+router.get('/totalBuy', [
     auth,
-    query('buyerUsername').optional().isString(),
-    query('page').optional().isInt({ min: 1 }),
-    query('limit').optional().isInt({ min: 1, max: 100 })
+    query('buyerUsername').optional().isString()
 ], asyncHandler(async (req, res) => {
     
     // Validate request parameters
@@ -226,7 +224,7 @@ router.get('/byUser', [
     query.buyer = user.id;
 
     // Extract query parameters
-    const { buyerUsername, page = 1, limit = 10 } = req.query;
+    const { buyerUsername } = req.query;
 
     // Apply buyer username filter
     if (buyerUsername) {
