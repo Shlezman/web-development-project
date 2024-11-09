@@ -116,6 +116,16 @@ All routes marked with [Admin] require the user to have admin privileges.
   - Returns only user's orders
   - Results are paginated and can be filtered/sorted
 
+### Get Orders sum and group by user [Auth]
+- GET /api/orders/byUser
+- Query Params:
+  - `buyerUsername` (optional, Admin only): Filter by buyer's username
+  - `page` (optional): Page number (default 1)
+  - `limit` (optional): Number of results per page (default 10, max 100)
+- Description:
+  - Returns user's sum orders order by user
+  - Results are paginated and can be filtered/sorted
+
 ### Update Order [Auth]
 - PATCH /api/orders/:orderId
 - Body:
