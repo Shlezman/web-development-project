@@ -208,36 +208,33 @@ router.get('/', [
 router.get('/byBuyer', [
     auth,
     query('status').optional().isIn(['cart', 'delivered']),
-    query('minAmount').optional().isFloat({ min: 0 }),
-    query('maxAmount').optional().isFloat({ min: 0 }),
     query('buyerUsername').optional().isString(),
-    query('sort').optional().isIn(['createdAt_asc', 'createdAt_desc', 'totalAmount_asc', 'totalAmount_desc']),
     query('page').optional().isInt({ min: 1 }),
     query('limit').optional().isInt({ min: 1, max: 100 })
 ], asyncHandler(async (req, res) => {
+    
+    // Validate request parameters
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
+    // Get authenticated user
     const user = await User.findById(req.user.id);
     let query = {};
-
-    // If not admin, only show user's orders
+    
+    // Restrict query to user's own orders
     query.buyer = user.id;
 
-    const { status, minAmount, maxAmount, buyerUsername, sort, page = 1, limit = 10 } = req.query;
+    // Extract query parameters
+    const { status, buyerUsername, page = 1, limit = 10 } = req.query;
 
+    // Apply status filter
     if (status) {
         query.status = status;
     }
 
-    if (minAmount || maxAmount) {
-        query.totalAmount = {};
-        if (minAmount) query.totalAmount.$gte = parseFloat(minAmount);
-        if (maxAmount) query.totalAmount.$lte = parseFloat(maxAmount);
-    }
-
+    // Apply buyer username filter
     if (buyerUsername) {
         const buyer = await User.findOne({ username: buyerUsername });
         if (buyer) {
@@ -247,34 +244,20 @@ router.get('/byBuyer', [
         }
     }
 
-    let sortOption = { createdAt: -1 }; // Default sort by most recent
-    if (sort) {
-        switch (sort) {
-            case 'createdAt_asc':
-                sortOption = { createdAt: 1 };
-                break;
-            case 'createdAt_desc':
-                sortOption = { createdAt: -1 };
-                break;
-            case 'totalAmount_asc':
-                sortOption = { totalAmount: 1 };
-                break;
-            case 'totalAmount_desc':
-                sortOption = { totalAmount: -1 };
-                break;
-        }
-    }
-
     try {
+        // Aggregation pipeline for order data
         const pipeline = [
+            // Match orders based on query filters
             { $match: query },
+            // Group orders by buyer
             {
                 $group: {
-                    _id: "$buyer", // Group by user ID
-                    totalAmountSum: { $sum: "$totalAmount" }, // Sum totalAmount for each user
-                    orderCount: { $sum: 1 } // Count of orders per user
+                    _id: "$buyer",
+                    totalAmountSum: { $sum: "$totalAmount" },
+                    orderCount: { $sum: 1 }
                 }
             },
+            // Join with users collection to get buyer information
             {
                 $lookup: {
                     from: "users",
@@ -283,9 +266,11 @@ router.get('/byBuyer', [
                     as: "buyerInfo"
                 }
             },
+            // Unwind buyer information array
             {
                 $unwind: "$buyerInfo"
             },
+            // Project final fields
             {
                 $project: {
                     userId: "$_id",
@@ -293,11 +278,13 @@ router.get('/byBuyer', [
                     orderCount: 1,
                     buyerUsername: "$buyerInfo.username"
                 }
-            },
-            { $sort: sortOption }
+            }
         ];
 
+        // Execute aggregation pipeline
         const result = await Order.aggregate(pipeline).exec();
+
+        // Return aggregated results
         res.json({
             users: result,
             totalUsers: result.length
