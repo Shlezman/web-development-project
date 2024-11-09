@@ -4,43 +4,43 @@ class Cart {
     }
 
     // Fetch the current cart order from the backend
-    async loadCartFromBackend() {
+    loadCartFromBackend() {
         const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
         const token = getCookie('jwt');
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/orders?status=cart`, {
-                method: 'GET',
-                headers: {
-                    'x-auth-token': token,
-                    'Content-Type': 'application/json'
+        $.ajax({
+            url: `${API_BASE_URL}/orders?status=cart`,
+            method: 'GET',
+            headers: {
+                'x-auth-token': token,
+                'Content-Type': 'application/json'
+            },
+            success: (data) => {
+                if (data.orders && data.orders.length > 0) {
+                    const order = data.orders[0];
+                    this.items = order.plants;
+                    this.orderId = order._id;
+                    this.displayCartItems();
+                } else {
+                    $('#cart-items').html('<p>Your cart is empty.</p>');
+                    $('#cart-total').html('');
                 }
-            });
-            const data = await response.json();
-
-            if (data.orders && data.orders.length > 0) {
-                const order = data.orders[0];
-                this.items = order.plants;
-                this.orderId = order._id; // Store the order ID for later use
-                this.displayCartItems();
-            } else {
-                document.getElementById('cart-items').innerHTML = '<p>Your cart is empty.</p>';
-                document.getElementById('cart-total').innerHTML = '';
+            },
+            error: (error) => {
+                console.error('Error loading cart:', error);
+                $('#cart-items').html('<p>Error loading cart. Please try again.</p>');
             }
-        } catch (error) {
-            console.error('Error loading cart:', error);
-            document.getElementById('cart-items').innerHTML = '<p>Error loading cart. Please try again.</p>';
-        }
+        });
     }
 
     // Display cart items and total amount
     displayCartItems() {
-        const cartItemsContainer = document.getElementById('cart-items');
-        const cartTotalContainer = document.getElementById('cart-total');
+        const cartItemsContainer = $('#cart-items');
+        const cartTotalContainer = $('#cart-total');
 
         if (this.items.length === 0) {
-            cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
-            cartTotalContainer.innerHTML = '<h4>Total: $0.00</h4>';
+            cartItemsContainer.html('<p>Your cart is empty.</p>');
+            cartTotalContainer.html('<h4>Total: $0.00</h4>');
             return;
         }
 
@@ -56,18 +56,16 @@ class Cart {
                 <td>$${item.plant.price.toFixed(2)}</td>
                 <td>${item.quantity}</td>
                 <td>$${itemTotal.toFixed(2)}</td>
-            </tr>
-        `;
+            </tr>`;
         });
 
         cartHTML += '</tbody></table>';
-        cartItemsContainer.innerHTML = cartHTML;
-        cartTotalContainer.innerHTML = `<h4>Total: $${total.toFixed(2)}</h4>`;
+        cartItemsContainer.html(cartHTML);
+        cartTotalContainer.html(`<h4>Total: $${total.toFixed(2)}</h4>`);
     }
 
-
     // Send request to mark the cart as delivered
-    async sendOrderToBackend() {
+    sendOrderToBackend() {
         const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
         const token = getCookie('jwt');
 
@@ -76,35 +74,31 @@ class Cart {
             return;
         }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/orders/${this.orderId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
-                },
-                body: JSON.stringify({ status: 'delivered' })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.errors?.[0]?.msg || 'Failed to place order');
+        $.ajax({
+            url: `${API_BASE_URL}/orders/${this.orderId}/status`,
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            data: JSON.stringify({ status: 'delivered' }),
+            success: () => {
+                alert('Order placed successfully!');
+                this.items = []; // Clear cart
+                this.displayCartItems(); // Refresh cart display
+                $('#cart-total').html('');
+            },
+            error: (error) => {
+                console.error('Error placing order:', error);
+                alert('Failed to place order');
             }
-
-            alert('Order placed successfully!');
-            this.items = []; // Clear cart
-            this.displayCartItems(); // Refresh cart display
-            document.getElementById('cart-total').innerHTML = '';
-        } catch (error) {
-            console.error('Error placing order:', error);
-            alert('Failed to place order');
-        }
+        });
     }
 }
 
 // Initialize and load the cart
 const cart = new Cart();
-document.addEventListener('DOMContentLoaded', () => {
+$(document).ready(() => {
     cart.loadCartFromBackend();
-    document.getElementById('sendOrderToBackend').addEventListener('click', () => cart.sendOrderToBackend());
+    $('#sendOrderToBackend').on('click', () => cart.sendOrderToBackend());
 });
