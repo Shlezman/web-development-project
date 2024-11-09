@@ -158,3 +158,9 @@ All routes marked with [Admin] require the user to have admin privileges.
   - Automatically sets delivery date
   - Once marked as delivered, order cannot be modified
   - User can create a new cart after marking current one as delivered
+
+## Twitter
+- Post an X post (twitter tweet) for greeting every new member after registration
+
+## Maps
+- Get the google maps API key for UI

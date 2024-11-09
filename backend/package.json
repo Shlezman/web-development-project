@@ -23,7 +23,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
     "mongoose-paginate-v2": "^1.8.3",
-    "twitter-api-v2": "^1.18.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "axios": "^1.6.2",
+    "oauth-1.0a": "^2.2.6"
   }
 }

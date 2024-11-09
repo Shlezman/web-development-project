@@ -1,4 +1,5 @@
-const API_KEY = atob("QUl6YVN5RENmWmEyalhXZm1fc3dlY2tPdDJjZ1dCWnhSSzRXZ3JB")
+const token = getCookie('jwt');
+const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -6,6 +7,27 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+async function getMap() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/map`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
+      });
+      //const result = response.json();
+      const resJson = await response.json();
+
+      const final = atob(resJson.mapKey);
+ 
+      return final;
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+ 
 const searchForm = document.getElementById('search-form');
 const plantsContainer = document.getElementById('plants-container');
 const prevPageBtn = document.getElementById('prev-page');
@@ -149,7 +171,13 @@ function displayPlants(data) {
             plantsContainer.appendChild(plantCard);
 
             // Initialize the map for every plant
-            CountryMap(plant.originCountry, `country-map-${index}`, API_KEY);
+            getMap()
+            .then(mapKey => {
+                CountryMap(plant.originCountry, `country-map-${index}`, mapKey);;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
 
         updatePaginationUI();

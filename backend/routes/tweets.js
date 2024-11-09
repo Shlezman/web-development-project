@@ -1,17 +1,74 @@
-//token: AAAAAAAAAAAAAAAAAAAAALCywgEAAAAAo8ck6DcSEPK9gYxsO5V%2BYsCKARA%3DGawYI0g1gWkqo8d0FfCb4F7qNwXrWxckP3igTn7mH0jS36yDib
+const crypto = require('crypto');
+const OAuth = require('oauth-1.0a');
+const axios = require('axios');
 const express = require('express');
 const router = express.Router();
 const asyncHandler = require("../utils/asyncHandler");
 
 // twitter auth
-const { TwitterApi } = require('twitter-api-v2');
+const appKey = process.env.X_APP_KEY;
+const appSecret = process.env.X_APP_SECRET;
+const accessToken = process.env.X_ACCESS_TOKEN;
+const accessTokenSecret = process.env.X_TOKEN_SECRET;
 
-const twitterClient = new TwitterApi({
-  appKey: "BP68Sfnuv52Hpb4BJZzfGvN6j",
-  appSecret: "JWgymqDBRfsfhZTk8IsvR0ww2HijJkIQuaf2OJeBs2lA5Oh4Aj",
-  accessToken: "1851239489143705600-RklI6NyVvGaRYjs0a5gk3t1bU6LoR3",
-  accessSecret: "xLAyArYltkv51HHx3eKLRC7gpInkOjmM79c7XnnIrWD3X"
+oauth = new OAuth({
+  consumer: {
+    key: appKey,
+    secret: appSecret
+  },
+  signature_method: 'HMAC-SHA1',
+  hash_function: (baseString, key) => {
+    return crypto
+      .createHmac('sha1', key)
+      .update(baseString)
+      .digest('base64');
+  }
 });
+
+async function postTweet(post) {
+  try {
+    const endpoint = 'https://api.twitter.com/2/tweets';
+    const method = 'POST';
+    
+    // Request data
+    const data = {
+      text: post
+    };
+
+    // Generate OAuth parameters
+    const oauthSignature = oauth.authorize(
+      {
+        url: endpoint,
+        method: method,
+        data: data
+      },
+      {
+        key: accessToken,
+        secret: accessTokenSecret
+      }
+    );
+
+    // Get authorization header
+    const authHeader = oauth.toHeader(oauthSignature);
+
+    // Make the request with OAuth headers
+    const response = await axios({
+      url: endpoint,
+      method: method,
+      data: data,
+      headers: {
+        ...authHeader,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error posting tweet:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
 
 
 
@@ -26,7 +83,7 @@ router.post('/', asyncHandler(async (req, res) => {
         });
       }
   
-      const response = await twitterClient.v2.tweet(tweet);
+      const response = await postTweet(tweet);
   
       res.status(200).json({ 
         message: 'Tweet posted successfully', 
