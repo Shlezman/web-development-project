@@ -205,9 +205,8 @@ router.get('/', [
 }));
 
 // Get orders sum and group by user
-router.get('/byBuyer', [
+router.get('/byUser', [
     auth,
-    query('status').optional().isIn(['cart', 'delivered']),
     query('buyerUsername').optional().isString(),
     query('page').optional().isInt({ min: 1 }),
     query('limit').optional().isInt({ min: 1, max: 100 })
@@ -227,12 +226,7 @@ router.get('/byBuyer', [
     query.buyer = user.id;
 
     // Extract query parameters
-    const { status, buyerUsername, page = 1, limit = 10 } = req.query;
-
-    // Apply status filter
-    if (status) {
-        query.status = status;
-    }
+    const { buyerUsername, page = 1, limit = 10 } = req.query;
 
     // Apply buyer username filter
     if (buyerUsername) {
