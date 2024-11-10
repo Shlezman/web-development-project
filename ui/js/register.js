@@ -45,8 +45,8 @@ $(document).ready(function () {
             xhrFields: { withCredentials: true },
             success: function (data) {
                 console.log('Registration successful');
-                window.location.href = 'login.html';
                 postFB(`A new member has joined us! Welcome ${username}!`);
+                window.location.href = 'login.html';
             },
             error: function (jqXHR) {
                 const errorMessage = jqXHR.responseJSON?.msg || jqXHR.responseJSON?.errors?.[0]?.msg || 'An unknown error occurred';
