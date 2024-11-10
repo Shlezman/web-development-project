@@ -1,4 +1,4 @@
-#web-development-project
+# web-development-project
 
 A website for plants store, here you can buy and sell your own plants!
 
@@ -11,24 +11,23 @@ Prerequisites
 Installation
 Usage
 Configuration
-Testing
 Contributing
 License
 
-#Overview
+# Overview
 
 web-development-project is a Node.js API and front-end web application that provides a way to buy and sell plants.
 
-#Features
+#F eatures
 
 Feature 1: login & register
 Feature 2: buy and sell plants
 
-#Getting Started
+# Getting Started
 
 These instructions will help you set up the project on your local machine for development and testing.
 
-#Prerequisites
+# Prerequisites
 Node.js (version 22.0.0 or higher)
 NPM (comes with Node.js) or Yarn (optional)
 Installation
@@ -41,7 +40,7 @@ npm install
 yarn install
 Set up environment variables (see Configuration below).
 
-#Usage
+# Usage
 
 Start the development server:
 cd backend
@@ -58,17 +57,10 @@ DB_CONNECTION_STRING=mongodb://localhost:27017/database-name
 SECRET_KEY=your_secret_key
 Replace the values with your actual configuration.
 
-
-#Testing
-
-To run tests, use:
-
-npm test
-
-#Contributing
+# Contributing
 
 Or, Ofek, Shlez, Aviv and Jonatan
 
-#License
+# License
 
 colman.ac.il
