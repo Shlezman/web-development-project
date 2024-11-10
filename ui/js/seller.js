@@ -1,13 +1,5 @@
 const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 const token = getCookie('jwt');
-const salesData = [
-    { month: 'Jan', sales: 4000 },
-    { month: 'Feb', sales: 3000 },
-    { month: 'Mar', sales: 5000 },
-    { month: 'Apr', sales: 4500 },
-    { month: 'May', sales: 6000 },
-    { month: 'Jun', sales: 5500 },
-];
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -144,41 +136,7 @@ function deletePlant(plantId) {
     });
 }
 
-function initSalesChart() {
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: salesData.map(d => d.month),
-            datasets: [{
-                label: 'Sales',
-                data: salesData.map(d => d.sales),
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-// Event listeners for create plant modal
-$('#create-plant-btn').on('click', function () {
-    $('#create-plant-modal').show();
-});
-
-$('#close-create-plant').on('click', function () {
-    $('#create-plant-modal').hide();
-});
-
 // Initialize page
 $(document).ready(function () {
     fetchPlants();
-    initSalesChart();
 });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Admin Page</title>
+    <title>Seller Admin Page - Plants Store</title>
 
     <link rel="stylesheet" href="css/seller.css">
     <link rel="stylesheet" href="css/plants.css">
@@ -13,57 +13,62 @@
 </head>
 <body>
 <header id="header" class="bg-light p-3 shadow-sm">
-    <h1 class="text-center">Plant Store</h1>
+    <h1 class="text-center">Plants Store - Seller Admin</h1>
 </header>
 
 <main class="container mt-4">
-    <h1>Seller Admin Page</h1>
-    <h2>Product Management</h2>
+    <h2 class="text-center mb-4">Product Management</h2>
 
-    <table id="productTable">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <div role="main">
-        <button id="create-plant-btn" class="btn btn-success" hidden="hidden">Create Plant</button>
-
-        <div id="create-plant-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span id="close-create-plant" class="close">&times;</span>
-                <h2>Create a New Plant</h2>
-                <form id="create-plant-form">
-                    <input type="text" id="plant-name" name="name" placeholder="Plant Name" required><br>
-                    <input type="text" id="plant-description" name="description" placeholder="Description" required><br>
-                    <input type="number" id="plant-price" name="price" placeholder="Price" step="0.01" required><br>
-                    <input type="text" id="plant-category" name="category" placeholder="Category" required><br>
-                    <input type="text" id="plant-origin-country" name="originCountry" placeholder="Origin Country" required><br>
-                    <button type="submit" class="btn btn-success">Submit</button>
-                </form>
-            </div>
+    <!-- Product Table Section -->
+    <section>
+        <div class="card p-3 mb-4">
+            <h3 class="mb-3">Manage Products</h3>
+            <table id="productTable" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
+    </section>
 
-        <div id="addProductModal" class="modal">
-            <h3>Add/Edit Product</h3>
-            <input type="text" id="productName" placeholder="Product Name">
-            <input type="number" id="productPrice" step="0.01" placeholder="Price">
-            <input type="number" id="productStock" placeholder="Stock">
-            <button onclick="saveProduct()">Save</button>
-            <button onclick="closeAddProductModal()">Cancel</button>
+    <!-- Create Plant Modal -->
+    <div id="create-plant-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-create-plant" class="close">&times;</span>
+            <h2>Create a New Plant</h2>
+            <form id="create-plant-form">
+                <div class="mb-3">
+                    <label for="plant-name" class="form-label">Plant Name</label>
+                    <input type="text" id="plant-name" name="name" class="form-control" placeholder="Enter plant name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="plant-description" class="form-label">Description</label>
+                    <input type="text" id="plant-description" name="description" class="form-control" placeholder="Enter description" required>
+                </div>
+                <div class="mb-3">
+                    <label for="plant-price" class="form-label">Price</label>
+                    <input type="number" id="plant-price" name="price" class="form-control" placeholder="Enter price" step="0.01" required>
+                </div>
+                <div class="mb-3">
+                    <label for="plant-category" class="form-label">Category</label>
+                    <input type="text" id="plant-category" name="category" class="form-control" placeholder="Enter category" required>
+                </div>
+                <div class="mb-3">
+                    <label for="plant-origin-country" class="form-label">Origin Country</label>
+                    <input type="text" id="plant-origin-country" name="originCountry" class="form-control" placeholder="Enter origin country" required>
+                </div>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
         </div>
-
-        <h2>Sales Visualization</h2>
-        <canvas id="salesChart"></canvas>
     </div>
 </main>
 
-<!-- Load jQuery before your custom JavaScript files -->
+<!-- Load jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/header.js"></script>

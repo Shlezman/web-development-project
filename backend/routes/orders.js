@@ -6,6 +6,7 @@ const auth = require('../middleware/auth');
 const {check, validationResult, query } = require("express-validator");
 const asyncHandler = require("../utils/asyncHandler");
 const Plant = require("../models/Plant");
+const adminAuth = require("../middleware/adminAuth");
 
 
 // Create a new order
@@ -297,6 +298,73 @@ router.get('/total-delivered', [
     }
 }));
 
+// Route to get daily sum of purchases for user's plants
+router.get('/purchases/hourly-sales', [
+    auth,
+    adminAuth
+], async (req, res) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(403).json({ errors: errors.array() });
+    }
 
+    try {
+        const hourlySales = await Order.aggregate([
+            { $match: { status: 'delivered' } },  // Only include delivered orders
+            {
+                $group: {
+                    _id: { hour: { $hour: "$createdAt" }, date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } } },
+                    totalSales: { $sum: "$totalAmount" }
+                }
+            },
+            { $sort: { '_id.date': 1, '_id.hour': 1 } }
+        ]);
+
+        res.json({ hourlySales });
+    } catch (error) {
+        console.error("Error calculating hourly sum of purchases:", error.message);
+        res.status(500).json({ msg: 'Server error', error: error.message });
+    }
+});
+
+
+router.get('/purchases/per-user', [auth, adminAuth], asyncHandler(async (req, res) => {
+    try {
+        // Aggregate to get total purchase per user
+        const purchasesPerUser = await Order.aggregate([
+            { $match: { status: 'delivered' } },  // Only include delivered orders
+            {
+                $group: {
+                    _id: "$buyer",
+                    totalAmount: { $sum: "$totalAmount" },
+                    totalOrders: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "buyerInfo"
+                }
+            },
+            { $unwind: "$buyerInfo" },
+            {
+                $project: {
+                    username: "$buyerInfo.username",
+                    totalAmount: 1,
+                    totalOrders: 1
+                }
+            },
+            { $sort: { totalAmount: -1 } }  // Sort by total amount in descending order
+        ]);
+
+        res.json(purchasesPerUser);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ msg: 'Server error', error: err.message });
+    }
+}));
 
 module.exports = router;
