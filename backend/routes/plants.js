@@ -7,6 +7,45 @@ const adminAuth = require('../middleware/adminAuth');
 const asyncHandler = require('../utils/asyncHandler');
 const { check, validationResult, query } = require('express-validator');
 const Order = require('../models/Order');
+const axios = require('axios');
+
+const PLANTNET_API_KEY = process.env.PLANTNET_API_KEY;
+const PLANTNET_BASE_URL = 'https://my-api.plantnet.org/v2/species';
+
+router.get('/common-names', async (req, res) => {
+    const { prefix } = req.query;
+    if (!prefix) {
+        return res.status(400).json({ error: 'Please provide a plant name prefix.' });
+    }
+
+    try {
+        // Query the /v2/species endpoint with the prefix and necessary parameters
+        const response = await axios.get(`${PLANTNET_BASE_URL}`, {
+            params: {
+                lang: 'en',
+                type: 'kt',
+                pageSize: 1,
+                page: 1,
+                prefix,
+                'api-key': PLANTNET_API_KEY
+            }
+        });
+
+        const data = response.data;
+
+        // Check if there's at least one result and extract common names
+        if (data.length > 0 && data[0].commonNames) {
+            const commonNames = data[0].commonNames; // Extract the common names directly
+            return res.json(commonNames); // Return only the common names array
+        } else {
+            return res.status(404).json({ message: `No common names found for plant with prefix: ${prefix}` });
+        }
+    } catch (error) {
+        console.error("Error fetching plant data:", error);
+        res.status(500).json({ error: 'Error fetching plant data from PlantNet API' });
+    }
+});
+
 
 // Get plants (all for admin, user's plants for regular users)
 router.get('/', auth, asyncHandler(async (req, res) => {

@@ -137,7 +137,22 @@ function fetchPlants() {
     });
 }
 
+async function fetchCommonNames(plantName) {
+    // Extract the first word from the plant name
+    const firstWord = plantName.split(' ')[0];
 
+    try {
+        const response = await $.ajax({
+            url: `${API_BASE_URL}/plants/common-names`,
+            method: 'GET',
+            data: { prefix: firstWord } // Send only the first word as the prefix
+        });
+        return response; // Returns an array of common names
+    } catch (error) {
+        console.error(`Error fetching common names for ${firstWord}:`, error);
+        return [];
+    }
+}
 
 async function displayPlants(data) {
     plantsContainer.empty();
@@ -146,23 +161,42 @@ async function displayPlants(data) {
             const plantCard = `
                 <div class="plant-card">
                     <h3>${plant.name}</h3>
+                    <p id="common-names-${index}" style="display: none;"><strong>Common Names:</strong> Loading...</p>
+                    <button class="btn btn-secondary show-common-names" data-plant-name="${plant.name}" id="show-common-names-${index}">Show Common Names</button>
                     <p>Category: ${plant.category}</p>
                     <p>Price: $${plant.price.toFixed(2)}</p>
                     <p>Description: ${plant.description}</p>
                     <p>Origin Country: ${plant.originCountry}</p>
-                    <div id="country-map-${index}" class="country-map"></div>
+                    <div id="country-map-${index}" class="country-map" style="width:100%; height:200px;"></div>
                     <button class="btn btn-primary" onclick="addToCart('${plant._id}', 1)">Add to Cart</button>
                 </div>`;
             plantsContainer.append(plantCard);
 
-            // Initialize the map for each plant
+            // Initialize the map for each plant after appending to DOM
             try {
                 const mapKey = await getMap();
                 CountryMap(plant.originCountry, `country-map-${index}`, mapKey);
             } catch (error) {
                 console.error('Error loading map:', error);
             }
-        })
+        });
+
+        // Add click event listener for the "Show Common Names" button
+        $('.show-common-names').on('click', async function () {
+            const plantName = $(this).data('plant-name');
+            const index = $(this).attr('id').split('-').pop();
+            const commonNamesElement = $(`#common-names-${index}`);
+
+            // Show loading, fetch, and display common names
+            commonNamesElement.show().text('Loading...');
+            const commonNames = await fetchCommonNames(plantName);
+            const commonNamesText = commonNames.length > 0 ? commonNames.join(', ') : 'No common names available';
+            commonNamesElement.html(`<strong>Common Names:</strong> ${commonNamesText}`);
+
+            // Hide button after displaying common names
+            $(this).hide();
+        });
+
         updatePaginationUI();
     } else {
         plantsContainer.html('<p>No plants found.</p>');
@@ -171,6 +205,9 @@ async function displayPlants(data) {
         updatePaginationUI();
     }
 }
+
+
+
 
 
 function addToCart(plantId, quantity = 1) {
