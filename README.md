@@ -2,16 +2,24 @@
 
 A website for plants store, here you can buy and sell your own plants!
 
-#Table of Contents
+# Table of Contents
 
 Overview
+
 Features
+
 Getting Started
+
 Prerequisites
+
 Installation
+
 Usage
+
 Configuration
+
 Contributing
+
 License
 
 # Overview
