@@ -51,7 +51,7 @@ Configuration
 
 To configure the project, create a .env file in the root directory with the following variables:
 
-##Example environment variables
+Example environment variables
 PORT=3000
 API_BASE_URL=http://localhost:3000/api
 DB_CONNECTION_STRING=mongodb://localhost:27017/database-name
