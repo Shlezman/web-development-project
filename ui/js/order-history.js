@@ -59,6 +59,13 @@ class OrderHistory {
             }
         });
     }
+    displayTotalDeliveredAmount(totalDeliveredAmount) {
+        const totalAmountHtml = `
+        <div class="alert alert-info">
+            <strong>Total Delivered Orders Amount:</strong> $${totalDeliveredAmount.toFixed(2)}
+        </div>`;
+        $('#total-delivered-amount').html(totalAmountHtml); // Update the dedicated container
+    }
 
     fetchOrders() {
         const token = getCookie('jwt');
@@ -76,6 +83,7 @@ class OrderHistory {
             queryParams.buyerUsername = this.username;
         }
 
+        // Fetch individual orders
         $.ajax({
             url: `${this.API_BASE_URL}/orders`,
             method: 'GET',
@@ -92,6 +100,24 @@ class OrderHistory {
             error: (jqXHR) => {
                 console.error('Error fetching orders:', jqXHR);
                 $('#orders-container').html('<div class="alert alert-danger">Error loading orders. Please try again later.</div>');
+            }
+        });
+
+        // Fetch total delivered amount
+        $.ajax({
+            url: `${this.API_BASE_URL}/orders/total-delivered`,
+            method: 'GET',
+            headers: {
+                'x-auth-token': token,
+                'Content-Type': 'application/json'
+            },
+            data: this.isAdminView && this.username ? { buyerUsername: this.username } : {},
+            success: (data) => {
+                this.displayTotalDeliveredAmount(data.totalDeliveredAmount);
+            },
+            error: (jqXHR) => {
+                console.error('Error fetching total delivered amount:', jqXHR);
+                $('#total-delivered-amount').html('<div class="alert alert-danger">Error loading total delivered amount. Please try again later.</div>');
             }
         });
     }
