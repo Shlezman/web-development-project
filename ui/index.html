@@ -9,6 +9,20 @@
     <link rel="stylesheet" href="css/plants.css">
     <link rel="stylesheet" href="css/video.css">
     <link rel="icon" href="./css/logo.png">
+    <style>
+        /* Custom font-face */
+        @font-face {
+            font-family: 'PlantFont';
+            src: url('fonts/PlantFont.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* Apply font-face */
+        body, h1, h2, h3 {
+            font-family: 'PlantFont', Arial, sans-serif;
+        }
+    </style>
 </head>
 
 <body>
@@ -17,13 +31,14 @@
 </video>
 
 <header id="header" class="bg-light p-3 shadow-sm">
-    <h1 class="text-center" id="page-title">Welcome to the Plant Store</h1>
+    <h1 class="text-center" id="page-title" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">Welcome to the Plant Store</h1>
 </header>
 
 <main role="main" class="container mt-5">
+
     <!-- Search and Create Plant Section -->
     <div id="search-section" class="section mb-5">
-        <h2 class="text-center mb-4" style="color: #333;">Find Your Ideal Plant</h2>
+        <h2 class="text-center mb-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">Find Your Ideal Plant</h2>
         <form id="search-form" class="row g-3 align-items-end">
             <div class="col-md-4">
                 <input type="text" class="form-control" id="q" name="q" placeholder="Search term">
@@ -84,7 +99,7 @@
     </div>
 
     <!-- Plants Container -->
-    <div id="plants-container" class="row g-4">
+    <div id="plants-container" class="row g-4" style="column-count: 3;">
         <!-- Dynamic content will be inserted here -->
     </div>
 
@@ -109,13 +124,13 @@
 <script src="js/map.js"></script>
 
 <script>
-    // jQuery to toggle the create plant modal
+    // jQuery to toggle the create plant modal with transition
     $(document).ready(function () {
         $('#create-plant-btn').on('click', function () {
-            $('#create-plant-modal').show();
+            $('#create-plant-modal').fadeIn(300);
         });
         $('#close-create-plant').on('click', function () {
-            $('#create-plant-modal').hide();
+            $('#create-plant-modal').fadeOut(300);
         });
     });
 </script>
