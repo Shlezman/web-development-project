@@ -70,3 +70,53 @@ button {
     font-weight: bold;
     cursor: pointer;
 }
+/* Card Styling */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Styling */
+#productTable {
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#productTable th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    border-right: 1px solid #dee2e6;
+}
+
+#productTable th:last-child {
+    border-right: none;
+}
+
+#productTable td {
+    padding: 12px;
+    text-align: center;
+    border-right: 1px solid #dee2e6;
+}
+
+#productTable td:last-child {
+    border-right: none;
+}
+
+/* Row Hover Effect */
+#productTable tbody tr:hover {
+    background-color: #f1f3f5;
+    cursor: pointer;
+}
+
+/* Button Styling */
+.table .btn {
+    padding: 5px 10px;
+    font-size: 0.875rem;
+    border-radius: 5px;
+}
