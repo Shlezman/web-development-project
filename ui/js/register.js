@@ -10,25 +10,24 @@ $(document).ready(function () {
     const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
     const token = getCookie('jwt');
 
-    // Post a welcome tweet after registration
-    function postTweet(tweet) {
+    // Post a welcome post after registration
+    function postFB(post) {
         $.ajax({
-            url: `${API_BASE_URL}/tweet`,
+            url: `${API_BASE_URL}/fb`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'x-auth-token': token
             },
-            data: JSON.stringify({ tweet }),
+            data: JSON.stringify({ "fb": post }),
             success: function (result) {
-                console.log('Tweet posted:', result);
+                console.log('fb post posted:', result);
             },
             error: function (error) {
-                console.error('Error posting tweet:', error);
+                console.error('Error posting on fb:', error);
             }
         });
     }
-
     registerForm.on('submit', function (e) {
         e.preventDefault();
 
@@ -47,7 +46,7 @@ $(document).ready(function () {
             success: function (data) {
                 console.log('Registration successful');
                 window.location.href = 'login.html';
-                postTweet(`A new member has joined us! Welcome ${username}!`);
+                postFB(`A new member has joined us! Welcome ${username}!`);
             },
             error: function (jqXHR) {
                 const errorMessage = jqXHR.responseJSON?.msg || jqXHR.responseJSON?.errors?.[0]?.msg || 'An unknown error occurred';
