@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
+// Define the Order schema structure
 const orderSchema = new mongoose.Schema({
     buyer: {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,7 +23,10 @@ const orderSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
+// Index for efficient queries by buyer and status
 orderSchema.index({ buyer: 1, status: 1 });
+
+// Add pagination functionality to the schema
 orderSchema.plugin(mongoosePaginate);
 
 // Static method to calculate total of delivered orders for a user
