@@ -28,6 +28,7 @@ $(document).ready(function () {
             }
         });
     }
+
     registerForm.on('submit', function (e) {
         e.preventDefault();
 

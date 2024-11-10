@@ -34,7 +34,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Connect to mongo
-//TODO: (need change the address to the mongo-server toi an env var for generic deployment)
 mongo.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.likp8.mongodb.net/`, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB Server: \n', err));
@@ -42,7 +41,7 @@ mongo.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSW
 app.use('/api/users', require('./routes/users'));
 app.use('/api/plants', require('./routes/plants'));
 app.use('/api/orders', require('./routes/orders'));
-app.use('/api/tweet', require('./routes/tweets'));
+app.use('/api/post', require('./routes/facebook'));
 app.use('/api/map', require('./routes/maps'))
 
 // Start 
