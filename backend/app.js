@@ -42,7 +42,7 @@ mongo.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSW
 app.use('/api/users', require('./routes/users'));
 app.use('/api/plants', require('./routes/plants'));
 app.use('/api/orders', require('./routes/orders'));
-app.use('/api/post', require('./routes/facebook'));
+app.use('/api/fb', require('./routes/facebook'));
 app.use('/api/map', require('./routes/maps'))
 
 // Start 
