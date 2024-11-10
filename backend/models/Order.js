@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
     plants: [{
         plant: { type: mongoose.Schema.Types.ObjectId, ref: 'Plant', required: true },
         quantity: { type: Number, required: true, min: 1 },
-        price: { type: Number, required: true } // Store the price at the time of adding to cart
+        price: { type: Number, required: true }
     }],
     totalAmount: { type: Number, required: true },
     status: {
@@ -22,10 +22,30 @@ const orderSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
-// Add index for buyer and status
 orderSchema.index({ buyer: 1, status: 1 });
-
-// Add the pagination plugin
 orderSchema.plugin(mongoosePaginate);
+
+// Static method to calculate total of delivered orders for a user
+orderSchema.statics.calculateTotalDelivered = async function (buyerId) {
+    try {
+        // Ensure buyerId is an ObjectId
+        const validBuyerId = typeof buyerId === 'string' ? new mongoose.Types.ObjectId(buyerId) : buyerId;
+
+        const result = await this.aggregate([
+            { $match: { buyer: validBuyerId, status: 'delivered' } },
+            {
+                $group: {
+                    _id: "$buyer",
+                    totalDeliveredAmount: { $sum: "$totalAmount" }
+                }
+            }
+        ]);
+
+        return result.length > 0 ? result[0].totalDeliveredAmount : 0;
+    } catch (error) {
+        console.error("Error in calculateTotalDelivered:", error.message);
+        throw error;
+    }
+};
 
 module.exports = mongoose.model('Order', orderSchema);

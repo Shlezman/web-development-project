@@ -7,6 +7,7 @@ const {check, validationResult, query } = require("express-validator");
 const asyncHandler = require("../utils/asyncHandler");
 const Plant = require("../models/Plant");
 
+
 // Create a new order
 router.post('/', [
     auth,
@@ -260,5 +261,42 @@ router.patch('/:orderId', [
 
     res.json({ msg: 'Order updated successfully', order: order });
 }));
+
+// Get total of delivered orders
+router.get('/total-delivered', [
+    auth,
+    query('buyerUsername').optional().isString()
+], asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user.id);
+    const { buyerUsername } = req.query;
+
+    let buyerId;
+
+    if (user.isAdmin && buyerUsername) {
+        // Admin requesting for another user by username
+        const buyer = await User.findOne({ username: buyerUsername });
+        if (!buyer) {
+            return res.status(404).json({ msg: `Buyer with username "${buyerUsername}" not found` });
+        }
+        buyerId = buyer._id;
+    } else if (!user.isAdmin && buyerUsername) {
+        // Non-admin users should not be able to request for other users
+        return res.status(403).json({ msg: 'Not authorized' });
+    } else {
+        // If no buyerUsername is provided or the user is not an admin, use their own ID
+        buyerId = req.user.id;
+    }
+
+    try {
+        // Use the static method from Order model
+        const totalDeliveredAmount = await Order.calculateTotalDelivered(buyerId);
+        res.json({ totalDeliveredAmount });
+    } catch (err) {
+        console.error(`Failed to calculate total delivered amount: ${err.message}`);
+        res.status(500).json({ msg: 'Server error', error: err.message });
+    }
+}));
+
+
 
 module.exports = router;
