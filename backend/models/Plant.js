@@ -2,6 +2,7 @@ const mongo = require('mongoose');
 const {Schema} = require("mongoose");
 const mongoosePaginate = require('mongoose-paginate-v2');
 
+// Define the Review schema for plant reviews
 const reviewSchema = new mongo.Schema({
   user: {
     type: mongo.Schema.Types.ObjectId,
@@ -24,6 +25,7 @@ const reviewSchema = new mongo.Schema({
   }
 });
 
+// Define the Plant schema structure
 const plantSchema = new mongo.Schema({
   name: {
     type: String,
@@ -83,9 +85,12 @@ const plantSchema = new mongo.Schema({
     }
 });
 
+// Add pagination functionality to the plant schema
 plantSchema.plugin(mongoosePaginate);
+
+// Add a text index for full-text search on name, description, and category
 plantSchema.index({ name: 'text', description: 'text', category: 'text' });
 
 
-// Export
+// Export the Plant model
 module.exports = mongo.model('Plant', plantSchema);

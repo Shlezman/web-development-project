@@ -38,6 +38,7 @@ mongo.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSW
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB Server: \n', err));
 
+// Add the routes and the required files
 app.use('/api/users', require('./routes/users'));
 app.use('/api/plants', require('./routes/plants'));
 app.use('/api/orders', require('./routes/orders'));
