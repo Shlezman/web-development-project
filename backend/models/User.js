@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
+// Define the User schema structure
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -38,4 +39,5 @@ userSchema.index({ username: 1, email: 1, isAdmin: 1, credit: 1 });
 // Add the pagination plugin
 userSchema.plugin(mongoosePaginate);
 
+// Export the Plant model
 module.exports = mongoose.model('User', userSchema);
